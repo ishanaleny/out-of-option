@@ -1,1 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAST RESORT™ — The Dating App You Use When Every Other Option Has Failed</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+  :root{
+    --bg:#0a0a0f;
+    --bg-alt:#120a1c;
+    --panel:#15101f;
+    --pink:#ff2e88;
+    --cyan:#00e6d8;
+    --yellow:#ffcb3d;
+    --ink:#eee9f5;
+    --dim:#8d84a3;
+    --line:#2b2340;
+    --danger:#ff5c5c;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+  }
+
+  ::selection{background:var(--pink);color:#0a0a0f;}
+
+  body{
+    min-height:100vh;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,46,136,.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(0,230,216,.10), transparent 45%);
+  }
+
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  .screen{
+    display:none;
+    min-height:100vh;
+    width:100%;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:5vh 6vw;
+    position:relative;
+  }
+  .screen.active{display:flex;}
+
+  .noise-tag{
+    position:fixed;
+    top:18px;left:22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--dim);
+    z-index:50;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .noise-tag .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--danger);
+    box-shadow:0 0 8px var(--danger);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+  /* ---------- LANDING ---------- */
+  #landing{
+    text-align:center;
+  }
+  .glitch-wrap{position:relative;}
+  .brand{
+    font-size:clamp(2.6rem, 9vw, 6rem);
+    font-weight:700;
+    line-height:0.95;
+    letter-spacing:-.02em;
+    position:relative;
+    margin:0;
+    color:var(--ink);
+  }
+  .brand .tm{font-size:.35em;vertical-align:super;color:var(--pink);}
+  .brand::before, .brand::after{
+    content:attr(data-text);
+    position:absolute;
+    left:0;top:0;
+    width:100%;
+    overflow:hidden;
+    background:var(--bg);
+    clip-path: inset(0 0 0 0);
+  }
+  .brand::before{
+    color:var(--pink);
+    animation:glitchTop 3.4s infinite linear;
+    z-index:-1;
+  }
+  .brand::after{
+    color:var(--cyan);
+    animation:glitchBottom 3.9s infinite linear;
+    z-index:-1;
+  }
+  @keyframes glitchTop{
+    0%,92%,100%{clip-path:inset(0 0 92% 0); transform:translate(0,0);}
+    93%{clip-path:inset(10% 0 55% 0); transform:translate(-3px,-1px);}
+    95%{clip-path:inset(60% 0 5% 0); transform:translate(3px,1px);}
+    97%{clip-path:inset(30% 0 40% 0); transform:translate(-2px,0);}
+  }
+  @keyframes glitchBottom{
+    0%,90%,100%{clip-path:inset(92% 0 0 0); transform:translate(0,0);}
+    91%{clip-path:inset(20% 0 60% 0); transform:translate(3px,1px);}
+    94%{clip-path:inset(70% 0 5% 0); transform:translate(-3px,-1px);}
+    98%{clip-path:inset(45% 0 30% 0); transform:translate(2px,0);}
+  }
+
+  .tagline{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--dim);
+    font-size:clamp(.8rem, 1.6vw, 1.05rem);
+    margin-top:18px;
+    letter-spacing:.01em;
+  }
+  .rock-bottom{
+    margin-top:6px;
+    font-size:clamp(1rem, 2vw, 1.3rem);
+    color:var(--yellow);
+    font-weight:500;
+  }
+
+  .cta-btn{
+    margin-top:52px;
+    padding:18px 44px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.05rem;
+    font-weight:700;
+    letter-spacing:.02em;
+    color:var(--bg);
+    background:linear-gradient(100deg, var(--pink), var(--cyan));
+    border:none;
+    border-radius:2px;
+    cursor:pointer;
+    position:relative;
+    transition:transform .18s ease, box-shadow .18s ease;
+    box-shadow:0 0 0 rgba(255,46,136,0);
+  }
+  .cta-btn:hover{
+    transform:translate(-2px,-2px) rotate(-.4deg);
+    box-shadow:6px 6px 0 var(--pink), -3px -3px 0 var(--cyan);
+  }
+  .cta-btn:active{transform:translate(0,0) scale(.98);}
+  .cta-btn.secondary{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--line);
+    box-shadow:none;
+  }
+  .cta-btn.secondary:hover{
+    border-color:var(--pink);
+    box-shadow:4px 4px 0 var(--pink);
+  }
+  .cta-btn.ghost{
+    background:transparent;
+    color:var(--dim);
+    border:1px dashed var(--line);
+    font-size:.85rem;
+    padding:10px 20px;
+    box-shadow:none;
+  }
+
+  .warning-strip{
+    margin-top:70px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.7rem;
+    color:var(--dim);
+    letter-spacing:.06em;
+    max-width:520px;
+  }
+
+  /* ---------- SHARED PANEL ---------- */
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:40px 36px;
+    max-width:560px;
+    width:100%;
+    position:relative;
+  }
+  .panel::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--pink), var(--cyan));
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    color:var(--pink);
+    letter-spacing:.05em;
+    margin-bottom:14px;
+  }
+  h2.q-title{
+    font-size:clamp(1.4rem,3vw,1.9rem);
+    margin:0 0 30px 0;
+    line-height:1.25;
+  }
+  .options-grid{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .opt-btn{
+    background:var(--bg-alt);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:16px 18px;
+    text-align:left;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1rem;
+    border-radius:3px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .opt-btn:hover{
+    border-color:var(--cyan);
+    background:rgba(0,230,216,.06);
+    transform:translateX(4px);
+  }
+
+  /* ---------- OPPOSITE MODE ---------- */
+  .field-row{margin-bottom:18px;}
+  .field-row label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    color:var(--dim);
+    margin-bottom:7px;
+    letter-spacing:.04em;
+  }
+  .field-row input, .field-row select{
+    width:100%;
+    background:var(--bg-alt);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:12px 14px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:.95rem;
+    border-radius:3px;
+  }
+  .field-row input:focus, .field-row select:focus, .opt-btn:focus, .cta-btn:focus{
+    outline:2px solid var(--cyan);
+    outline-offset:2px;
+  }
+
+  .reveal-box{
+    margin-top:24px;
+    padding:18px;
+    border:1px dashed var(--danger);
+    border-radius:3px;
+    background:rgba(255,92,92,.05);
+  }
+  .reveal-row{
+    display:flex;justify-content:space-between;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.85rem;
+    padding:6px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .reveal-row:last-child{border-bottom:none;}
+  .reveal-row .you{color:var(--dim);}
+  .reveal-row .opp{color:var(--pink);font-weight:700;}
+
+  /* ---------- ANTI-SWIPE ---------- */
+  .swipe-stage{
+    position:relative;
+    width:100%;
+    max-width:340px;
+    height:460px;
+    margin:0 auto;
+  }
+  .swipe-card{
+    position:absolute;
+    inset:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    transition:transform .35s cubic-bezier(.2,.8,.3,1), opacity .35s ease;
+    cursor:grab;
+  }
+  .swipe-card .photo{
+    height:62%;
+    background:linear-gradient(135deg, var(--bg-alt), #241638);
+    display:flex;align-items:center;justify-content:center;
+    font-size:4rem;
+  }
+  .swipe-card .info{
+    padding:18px 20px;
+    flex:1;
+  }
+  .swipe-card .info h3{margin:0 0 6px 0;font-size:1.3rem;}
+  .swipe-card .info p{margin:0;color:var(--dim);font-size:.85rem;font-family:'JetBrains Mono', monospace;}
+  .swipe-card.fly-left{transform:translateX(-160%) rotate(-18deg);opacity:0;}
+  .swipe-card.fly-right{transform:translateX(160%) rotate(18deg);opacity:0;}
+  .swipe-stamp{
+    position:absolute;
+    top:26px;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:1.1rem;
+    padding:6px 14px;
+    border:3px solid;
+    border-radius:6px;
+    transform:rotate(-14deg);
+    opacity:0;
+    transition:opacity .12s ease;
+    letter-spacing:.05em;
+    z-index:5;
+  }
+  .stamp-left{left:22px;border-color:var(--danger);color:var(--danger);}
+  .stamp-right{right:22px;border-color:var(--cyan);color:var(--cyan);transform:rotate(14deg);}
+
+  .swipe-controls{
+    display:flex;
+    gap:26px;
+    margin-top:30px;
+  }
+  .swipe-controls button{
+    width:58px;height:58px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink);
+    font-size:1.4rem;
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .swipe-controls button:hover{transform:scale(1.1);}
+  .swipe-controls .reject{border-color:var(--danger);color:var(--danger);}
+  .swipe-controls .accept{border-color:var(--cyan);color:var(--cyan);}
+
+  .toast-msg{
+    margin-top:20px;
+    min-height:24px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.85rem;
+    color:var(--yellow);
+    text-align:center;
+  }
+  .swipe-count{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.75rem;
+    color:var(--dim);
+    margin-top:4px;
+  }
+
+  /* ---------- WHEEL OF FATE ---------- */
+  .wheels-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:16px;
+    width:100%;
+    max-width:760px;
+  }
+  .wheel-box{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:14px;
+    text-align:center;
+  }
+  .wheel-box .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    color:var(--dim);
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+  .wheel-window{
+    height:76px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:var(--bg-alt);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .wheel-strip{
+    display:flex;
+    flex-direction:column;
+    transition:transform 2.2s cubic-bezier(.15,.85,.25,1);
+  }
+  .wheel-cell{
+    height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:.95rem;
+    padding:0 6px;
+    text-align:center;
+  }
+  .wheel-box.locked .wheel-window{border-color:var(--cyan);box-shadow:0 0 14px rgba(0,230,216,.25);}
+
+  .spin-all-btn{margin-top:36px;}
+
+  .loading-wrap{
+    margin-top:30px;
+    width:100%;
+    max-width:460px;
+    text-align:center;
+  }
+  .loading-bar-track{
+    width:100%;
+    height:10px;
+    background:var(--bg-alt);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    margin-bottom:14px;
+  }
+  .loading-bar-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--pink), var(--cyan));
+    transition:width .25s linear;
+  }
+  .loading-line{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.8rem;
+    color:var(--dim);
+    min-height:20px;
+  }
+
+  /* ---------- RESULT ---------- */
+  .result-card{
+    max-width:600px;
+    width:100%;
+  }
+  .match-banner{
+    font-family:'JetBrains Mono', monospace;
+    letter-spacing:.06em;
+    color:var(--pink);
+    font-size:.8rem;
+    margin-bottom:10px;
+  }
+  .match-name{
+    font-size:2.2rem;
+    font-weight:700;
+    margin:0 0 4px 0;
+  }
+  .match-sub{
+    color:var(--dim);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.85rem;
+    margin-bottom:22px;
+  }
+  .match-avatar{
+    width:100%;
+    height:150px;
+    border-radius:6px;
+    background:linear-gradient(135deg, var(--bg-alt), #241638);
+    display:flex;align-items:center;justify-content:center;
+    font-size:3.6rem;
+    margin-bottom:22px;
+    border:1px solid var(--line);
+  }
+  .attr-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px 20px;
+    margin-bottom:24px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.82rem;
+  }
+  .attr-grid div span{color:var(--dim);}
+  .compat-score{
+    text-align:center;
+    margin:26px 0;
+  }
+  .compat-score .num{
+    font-size:3.4rem;
+    font-weight:700;
+    color:var(--cyan);
+    line-height:1;
+  }
+  .compat-score .lbl{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    color:var(--dim);
+    letter-spacing:.08em;
+    margin-top:4px;
+  }
+  .breakdown{margin-bottom:26px;}
+  .bd-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:9px;
+  }
+  .bd-row .bd-label{
+    width:90px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    color:var(--dim);
+    flex-shrink:0;
+  }
+  .bd-track{
+    flex:1;
+    height:7px;
+    background:var(--bg-alt);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .bd-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--pink), var(--cyan));
+    width:0%;
+    transition:width 1s ease;
+  }
+  .bd-pct{
+    width:38px;
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.75rem;
+    color:var(--ink);
+  }
+  .verdict{
+    border-top:1px solid var(--line);
+    padding-top:20px;
+    text-align:center;
+  }
+  .verdict .big{
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--yellow);
+    margin-bottom:6px;
+  }
+  .verdict .small{
+    color:var(--dim);
+    font-size:.85rem;
+    font-family:'JetBrains Mono', monospace;
+    margin-bottom:2px;
+  }
+  .result-actions{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin-top:30px;
+    flex-wrap:wrap;
+  }
+
+  @media (max-width:480px){
+    .panel{padding:28px 20px;}
+    .swipe-stage{max-width:280px;height:400px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noise-tag mono"><span class="dot"></span> SYSTEM STATUS: BARELY OPERATIONAL</div>
+
+<!-- ===================== LANDING ===================== -->
+<section id="landing" class="screen active">
+  <div class="glitch-wrap">
+    <h1 class="brand" data-text="LAST RESORT">LAST RESORT<span class="tm">™</span></h1>
+  </div>
+  <p class="tagline">The dating app you use when every other option has failed.</p>
+  <p class="rock-bottom">You have officially hit rock bottom. ❤️</p>
+  <button class="cta-btn" id="findMeBtn">FIND ME SOMEONE</button>
+  <p class="warning-strip mono">By continuing you acknowledge that our algorithm has given up trying to understand what you want, and so, frankly, have we.</p>
+</section>
+
+<!-- ===================== FATE QUESTION ===================== -->
+<section id="fate" class="screen">
+  <div class="panel">
+    <div class="eyebrow mono">STEP 1 / FATE CALIBRATION</div>
+    <h2 class="q-title" id="fateQuestion">Loading existential question...</h2>
+    <div class="options-grid" id="fateOptions"></div>
+  </div>
+</section>
+
+<!-- ===================== MODE: OPPOSITE ===================== -->
+<section id="modeOpposite" class="screen">
+  <div class="panel">
+    <div class="eyebrow mono">MODE: THE OPPOSITE</div>
+    <h2 class="q-title">Tell us what you're looking for.<br>We'll remember it, so we can ignore it.</h2>
+    <div class="field-row">
+      <label>Ideal personality</label>
+      <select id="oppPersonality">
+        <option>Kind</option><option>Funny</option><option>Ambitious</option>
+        <option>Calm</option><option>Adventurous</option><option>Loyal</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <label>Favorite hobby to share</label>
+      <select id="oppHobby">
+        <option>Hiking</option><option>Reading</option><option>Cooking</option>
+        <option>Gaming</option><option>Painting</option><option>Dancing</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <label>A trait you can't live without</label>
+      <select id="oppTrait">
+        <option>Honesty</option><option>Punctuality</option><option>Humor</option>
+        <option>Ambition</option><option>Patience</option><option>Affection</option>
+      </select>
+    </div>
+    <button class="cta-btn" id="oppSubmit">LOCK IN MY PREFERENCES</button>
+    <div class="reveal-box" id="oppReveal" style="display:none;">
+      <div class="eyebrow mono" style="color:var(--danger);">PERFECT. WE KNOW EXACTLY WHO NOT TO SHOW YOU.</div>
+      <div id="oppRevealRows"></div>
+      <button class="cta-btn secondary" id="oppContinue" style="margin-top:20px;">CONTINUE ANYWAY</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MODE: ANTI-SWIPE ===================== -->
+<section id="modeSwipe" class="screen">
+  <div class="eyebrow mono" style="margin-bottom:20px;">MODE: ANTI-SWIPE</div>
+  <div class="swipe-stage" id="swipeStage">
+    <div class="swipe-stamp stamp-left mono" id="stampLeft">REJECTED</div>
+    <div class="swipe-stamp stamp-right mono" id="stampRight">REJECTED</div>
+  </div>
+  <div class="swipe-controls">
+    <button class="reject" id="swipeLeftBtn">✕</button>
+    <button class="accept" id="swipeRightBtn">♥</button>
+  </div>
+  <div class="toast-msg mono" id="swipeToast">Swipe right for someone you like. It will not work.</div>
+  <div class="swipe-count mono" id="swipeCount">Card 1 of 6</div>
+</section>
+
+<!-- ===================== MODE: WHEEL OF FATE ===================== -->
+<section id="modeWheel" class="screen">
+  <div class="eyebrow mono" style="margin-bottom:6px;">MODE: WHEEL OF FATE</div>
+  <h2 class="q-title" style="text-align:center;">Spin every wheel. Face the consequences.</h2>
+  <div class="wheels-grid" id="wheelsGrid"></div>
+  <button class="cta-btn spin-all-btn" id="spinAllBtn">SPIN ALL WHEELS</button>
+  <div class="loading-wrap" id="loadingWrap" style="display:none;">
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingFill"></div></div>
+    <div class="loading-line mono" id="loadingLine">Initializing regret engine...</div>
+  </div>
+</section>
+
+<!-- ===================== RESULT ===================== -->
+<section id="result" class="screen">
+  <div class="panel result-card">
+    <div class="match-banner mono">❤️ MATCH FOUND</div>
+    <h2 class="match-name" id="resName">—</h2>
+    <div class="match-sub mono" id="resSub">—</div>
+    <div class="match-avatar" id="resAvatar">🙂</div>
+    <div class="attr-grid" id="resAttrGrid"></div>
+    <div class="compat-score">
+      <div class="num" id="resScore">0%</div>
+      <div class="lbl mono">OVERALL COMPATIBILITY</div>
+    </div>
+    <div class="breakdown" id="resBreakdown"></div>
+    <div class="verdict">
+      <div class="big" id="verdictBig">FINAL VERDICT: CLOSE ENOUGH.</div>
+      <div class="small">We had to compromise on a few things.</div>
+      <div class="small">Mostly everything.</div>
+    </div>
+    <div class="result-actions">
+      <button class="cta-btn" id="tryAgainBtn">TRY YOUR LUCK AGAIN</button>
+      <button class="cta-btn ghost" id="acceptFateBtn">ACCEPT FATE</button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     UTILITIES
+  ========================================================= */
+  function $(id){ return document.getElementById(id); }
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  /* =========================================================
+     PRESET CHARACTER DATABASE (20 profiles — the only humans who exist)
+  ========================================================= */
+  const CHARACTERS = [
+    {name:"Rashmi",   age:29, location:"Kochi",      interest:"Gaming",      personality:"Chaotic",   hobby:"Streaming",  pet:"Dog",     uselessness:72, emoji:"🎮"},
+    {name:"Arjun",    age:34, location:"Bangalore",  interest:"Fitness",     personality:"Intense",   hobby:"Gym",        pet:"None",    uselessness:41, emoji:"🏋️"},
+    {name:"Meera",    age:26, location:"Mumbai",     interest:"Art",         personality:"Dreamy",    hobby:"Painting",   pet:"Cat",     uselessness:88, emoji:"🎨"},
+    {name:"Kabir",    age:31, location:"Delhi",      interest:"Startups",    personality:"Anxious",   hobby:"Networking", pet:"Fish",    uselessness:95, emoji:"💼"},
+    {name:"Ananya",   age:24, location:"Kochi",      interest:"Books",       personality:"Quiet",     hobby:"Reading",    pet:"Cat",     uselessness:33, emoji:"📚"},
+    {name:"Vikram",   age:38, location:"Chennai",    interest:"Cars",        personality:"Loud",      hobby:"Racing",     pet:"None",    uselessness:64, emoji:"🚗"},
+    {name:"Divya",    age:27, location:"Pune",       interest:"Cooking",     personality:"Warm",      hobby:"Baking",     pet:"Dog",     uselessness:12, emoji:"🍳"},
+    {name:"Rohan",    age:30, location:"Hyderabad",  interest:"Crypto",      personality:"Delusional",hobby:"Trading",    pet:"None",    uselessness:99, emoji:"📉"},
+    {name:"Sneha",    age:25, location:"Kolkata",    interest:"Music",       personality:"Moody",     hobby:"Singing",    pet:"Bird",    uselessness:57, emoji:"🎤"},
+    {name:"Aditya",   age:33, location:"Kochi",      interest:"Hiking",      personality:"Adventurous",hobby:"Trekking",  pet:"Dog",     uselessness:22, emoji:"⛰️"},
+    {name:"Priya",    age:28, location:"Goa",        interest:"Yoga",        personality:"Calm",      hobby:"Meditation", pet:"Cat",     uselessness:19, emoji:"🧘"},
+    {name:"Karthik",  age:36, location:"Bangalore",  interest:"Coding",      personality:"Detached",  hobby:"Debugging",  pet:"None",    uselessness:76, emoji:"💻"},
+    {name:"Fatima",   age:23, location:"Mumbai",     interest:"Fashion",     personality:"Confident", hobby:"Styling",    pet:"Dog",     uselessness:44, emoji:"👗"},
+    {name:"Nikhil",   age:35, location:"Delhi",      interest:"Politics",    personality:"Argumentative",hobby:"Debating",pet:"None",    uselessness:83, emoji:"🗳️"},
+    {name:"Ishita",   age:29, location:"Kochi",      interest:"Gaming",      personality:"Sarcastic", hobby:"Speedrunning",pet:"Fish",   uselessness:66, emoji:"🕹️"},
+    {name:"Farhan",   age:32, location:"Chennai",    interest:"Movies",      personality:"Nostalgic", hobby:"Collecting", pet:"Cat",     uselessness:51, emoji:"🎬"},
+    {name:"Tara",     age:26, location:"Pune",       interest:"Dance",       personality:"Energetic", hobby:"Choreography",pet:"Dog",    uselessness:9,  emoji:"💃"},
+    {name:"Sameer",   age:40, location:"Kochi",      interest:"Fishing",     personality:"Patient",   hobby:"Fishing",    pet:"None",    uselessness:5,  emoji:"🎣"},
+    {name:"Nandini",  age:27, location:"Hyderabad",  interest:"Astrology",   personality:"Mystical",  hobby:"Stargazing", pet:"Cat",     uselessness:91, emoji:"🔮"},
+    {name:"Dev",      age:31, location:"Kolkata",    interest:"Gaming",      personality:"Chaotic",   hobby:"Cosplay",    pet:"Bird",    uselessness:79, emoji:"👾"}
+  ];
+
+  /* =========================================================
+     STATE
+  ========================================================= */
+  const state = {
+    mode: null,
+    wheelResult: {},
+    finalMatch: null,
+    finalScore: 0,
+    breakdown: {}
+  };
+
+  /* =========================================================
+     LANDING -> FATE QUESTION
+  ========================================================= */
+  const FATE_QUESTIONS = [
+    { q: "Pick a number:", opts: ["7","13","42","69","∞"] },
+    { q: "Choose a vibe:", opts: ["Chaos","Regret","Delusion","Hope"] },
+    { q: "Choose a time:", opts: ["2AM","3AM","4AM"] }
+  ];
+  const MODES = ["modeOpposite","modeSwipe","modeWheel"];
+
+  $('findMeBtn').addEventListener('click', function(){
+    const fq = pick(FATE_QUESTIONS);
+    $('fateQuestion').textContent = fq.q;
+    const wrap = $('fateOptions');
+    wrap.innerHTML = "";
+    fq.opts.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'opt-btn';
+      b.textContent = opt;
+      b.addEventListener('click', function(){
+        // The answer determines nothing about matching. It determines suffering type.
+        state.mode = pick(MODES);
+        enterMode(state.mode);
+      });
+      wrap.appendChild(b);
+    });
+    showScreen('fate');
+  });
+
+  function enterMode(mode){
+    if(mode === "modeOpposite"){ showScreen('modeOpposite'); }
+    if(mode === "modeSwipe"){ initSwipeMode(); showScreen('modeSwipe'); }
+    if(mode === "modeWheel"){ initWheelMode(); showScreen('modeWheel'); }
+  }
+
+  /* =========================================================
+     MODE 1: THE OPPOSITE
+  ========================================================= */
+  const OPPOSITES = {
+    personality: {Kind:"Rude", Funny:"Humorless", Ambitious:"Lazy", Calm:"Volatile", Adventurous:"Homebody", Loyal:"Flaky"},
+    hobby: {Hiking:"Doomscrolling", Reading:"Never reading", Cooking:"Only ordering in", Gaming:"Judging gamers", Painting:"Aggressively beige", Dancing:"Standing very still"},
+    trait: {Honesty:"Constant lying", Punctuality:"Chronically 90 min late", Humor:"Painfully serious", Ambition:"No goals whatsoever", Patience:"Zero patience", Affection:"Emotionally unavailable"}
+  };
+
+  $('oppSubmit').addEventListener('click', function(){
+    const p = $('oppPersonality').value;
+    const h = $('oppHobby').value;
+    const t = $('oppTrait').value;
+    const rows = $('oppRevealRows');
+    rows.innerHTML = `
+      <div class="reveal-row"><span class="you">You wanted: ${p}</span><span class="opp">You get: ${OPPOSITES.personality[p]}</span></div>
+      <div class="reveal-row"><span class="you">You wanted: ${h}</span><span class="opp">You get: ${OPPOSITES.hobby[h]}</span></div>
+      <div class="reveal-row"><span class="you">You wanted: ${t}</span><span class="opp">You get: ${OPPOSITES.trait[t]}</span></div>
+    `;
+    $('oppReveal').style.display = 'block';
+  });
+
+  $('oppContinue').addEventListener('click', function(){
+    initWheelMode();
+    showScreen('modeWheel');
+  });
+
+  /* =========================================================
+     MODE 2: ANTI-SWIPE
+  ========================================================= */
+  const SWIPE_PROFILES = CHARACTERS.slice(0,6);
+  const SWIPE_LEFT_MSGS  = ["Nice try.", "You thought you had a choice?", "The algorithm has rejected your decision.", "Denied, with confidence."];
+  const SWIPE_RIGHT_MSGS = ["Nice try.", "You thought you had a choice?", "The algorithm has rejected your decision.", "Absolutely not, but nice attempt."];
+  let swipeIndex = 0;
+  let swipeBusy = false;
+
+  function initSwipeMode(){
+    swipeIndex = 0;
+    swipeBusy = false;
+    $('swipeToast').textContent = "Swipe right for someone you like. It will not work.";
+    renderSwipeCard();
+  }
+
+  function renderSwipeCard(){
+    const stage = $('swipeStage');
+    // remove old card if present
+    const old = stage.querySelector('.swipe-card');
+    if(old) old.remove();
+
+    if(swipeIndex >= SWIPE_PROFILES.length){
+      $('swipeCount').textContent = "No more profiles. As expected.";
+      const done = document.createElement('div');
+      done.className = 'swipe-card';
+      done.innerHTML = `<div class="photo">🚫</div><div class="info"><h3>End of the line.</h3><p>The system has run out of people to disappoint you with.</p></div>`;
+      stage.appendChild(done);
+      setTimeout(function(){
+        initWheelMode();
+        showScreen('modeWheel');
+      }, 1600);
+      return;
+    }
+    const c = SWIPE_PROFILES[swipeIndex];
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.innerHTML = `<div class="photo">${c.emoji}</div><div class="info"><h3>${c.name}, ${c.age}</h3><p>${c.location} · ${c.interest} · ${c.personality}</p></div>`;
+    stage.appendChild(card);
+    $('swipeCount').textContent = `Card ${swipeIndex+1} of ${SWIPE_PROFILES.length}`;
+  }
+
+  function doSwipe(direction){
+    if(swipeBusy || swipeIndex >= SWIPE_PROFILES.length) return;
+    swipeBusy = true;
+    const stage = $('swipeStage');
+    const card = stage.querySelector('.swipe-card');
+    const stampEl = direction === 'right' ? $('stampRight') : $('stampLeft');
+    stampEl.style.opacity = 1;
+
+    // inverted physics: right swipe flies left, left swipe flies right
+    if(card){
+      card.classList.add(direction === 'right' ? 'fly-left' : 'fly-right');
+    }
+    $('swipeToast').textContent = direction === 'right' ? pick(SWIPE_RIGHT_MSGS) : pick(SWIPE_LEFT_MSGS);
+
+    setTimeout(function(){
+      stampEl.style.opacity = 0;
+      swipeIndex++;
+      swipeBusy = false;
+      renderSwipeCard();
+    }, 420);
+  }
+
+  $('swipeLeftBtn').addEventListener('click', function(){ doSwipe('left'); });
+  $('swipeRightBtn').addEventListener('click', function(){ doSwipe('right'); });
+
+  /* =========================================================
+     MODE 3: WHEEL OF FATE
+  ========================================================= */
+  const WHEEL_DEFS = [
+    { key:'age', label:'AGE', values:["23","24","25","26","27","28","29","30","31","32","33","34","35","36","38","40"] },
+    { key:'interest', label:'INTEREST', values:["Gaming","Fitness","Art","Startups","Books","Cars","Cooking","Crypto","Music","Hiking","Yoga","Coding","Fashion","Politics","Movies","Dance","Fishing","Astrology"] },
+    { key:'personality', label:'PERSONALITY', values:["Chaotic","Intense","Dreamy","Anxious","Quiet","Loud","Warm","Delusional","Moody","Adventurous","Calm","Detached","Confident","Argumentative","Sarcastic","Nostalgic","Energetic","Patient","Mystical"] },
+    { key:'hobby', label:'HOBBY', values:["Streaming","Gym","Painting","Networking","Reading","Racing","Baking","Trading","Singing","Trekking","Meditation","Debugging","Styling","Debating","Speedrunning","Collecting","Choreography","Fishing","Stargazing","Cosplay"] },
+    { key:'pet', label:'PET', values:["Dog","Cat","Fish","Bird","None"] },
+    { key:'location', label:'LOCATION', values:["Kochi","Bangalore","Mumbai","Delhi","Chennai","Pune","Hyderabad","Kolkata","Goa"] }
+  ];
+
+  function initWheelMode(){
+    state.wheelResult = {};
+    const grid = $('wheelsGrid');
+    grid.innerHTML = "";
+    WHEEL_DEFS.forEach(def => {
+      const box = document.createElement('div');
+      box.className = 'wheel-box';
+      box.id = 'wheelbox-' + def.key;
+      box.innerHTML = `
+        <div class="label mono">${def.label}</div>
+        <div class="wheel-window">
+          <div class="wheel-strip" id="strip-${def.key}">
+            <div class="wheel-cell">${def.values[0]}</div>
+          </div>
+        </div>`;
+      grid.appendChild(box);
+    });
+    $('spinAllBtn').style.display = 'inline-block';
+    $('spinAllBtn').disabled = false;
+    $('spinAllBtn').textContent = "SPIN ALL WHEELS";
+    $('loadingWrap').style.display = 'none';
+    $('loadingFill').style.width = '0%';
+  }
+
+  function spinWheel(def){
+    return new Promise(resolve => {
+      const strip = $('strip-' + def.key);
+      const finalValue = pick(def.values);
+      // build a long strip: random filler + final value at the end
+      const REEL_LEN = 24;
+      let html = "";
+      for(let i=0;i<REEL_LEN;i++){
+        html += `<div class="wheel-cell">${pick(def.values)}</div>`;
+      }
+      html += `<div class="wheel-cell">${finalValue}</div>`;
+      strip.innerHTML = html;
+      strip.style.transition = 'none';
+      strip.style.transform = 'translateY(0px)';
+      // force reflow
+      void strip.offsetHeight;
+      const cellHeight = 76;
+      const targetY = -(REEL_LEN * cellHeight);
+      requestAnimationFrame(function(){
+        strip.style.transition = 'transform 2.1s cubic-bezier(.15,.85,.25,1)';
+        strip.style.transform = `translateY(${targetY}px)`;
+      });
+      setTimeout(function(){
+        document.getElementById('wheelbox-' + def.key).classList.add('locked');
+        state.wheelResult[def.key] = finalValue;
+        resolve();
+      }, 2250);
+    });
+  }
+
+  const LOADING_LINES = [
+    "Analyzing 47,293 profiles...",
+    "Cross-referencing bad decisions...",
+    "Consulting the algorithm's therapist...",
+    "Lowering standards accordingly...",
+    "Ignoring several red flags...",
+    "Calculating minimum viable compatibility...",
+    "Double-checking there's no one better...",
+    "Confirming there is, in fact, no one better...",
+    "Finalizing your fate..."
+  ];
+
+  $('spinAllBtn').addEventListener('click', async function(){
+    $('spinAllBtn').disabled = true;
+    $('spinAllBtn').textContent = "SPINNING...";
+    for(const def of WHEEL_DEFS){
+      await spinWheel(def);
+    }
+    $('spinAllBtn').style.display = 'none';
+    $('loadingWrap').style.display = 'block';
+    runLoadingSequence();
+  });
+
+  function runLoadingSequence(){
+    let step = 0;
+    const totalSteps = LOADING_LINES.length;
+    $('loadingLine').textContent = LOADING_LINES[0];
+    $('loadingFill').style.width = "0%";
+    const interval = setInterval(function(){
+      step++;
+      const pct = Math.min(100, Math.round((step/totalSteps)*100));
+      $('loadingFill').style.width = pct + "%";
+      if(step < totalSteps){
+        $('loadingLine').textContent = LOADING_LINES[step];
+      } else {
+        clearInterval(interval);
+        setTimeout(function(){
+          computeMatch();
+          renderResult();
+          showScreen('result');
+        }, 500);
+      }
+    }, 480);
+  }
+
+  /* =========================================================
+     MATCHING LOGIC
+  ========================================================= */
+  function computeMatch(){
+    const target = state.wheelResult;
+    let best = null;
+    let bestScore = -1;
+    let bestBreakdown = null;
+
+    CHARACTERS.forEach(c => {
+      const bd = {};
+      // Age match: closer age = higher score, max diff considered ~20 years
+      const ageDiff = Math.abs(c.age - parseInt(target.age, 10));
+      bd.age = Math.max(0, Math.round(100 - (ageDiff * 6)));
+      bd.interest = c.interest === target.interest ? 100 : (c.interest.toLowerCase().includes(target.interest.toLowerCase()) ? 60 : randInt(0,35));
+      bd.personality = c.personality === target.personality ? 100 : randInt(5,45);
+      bd.hobby = c.hobby === target.hobby ? 100 : randInt(0,30);
+      bd.pet = c.pet === target.pet ? 100 : (target.pet === "None" || c.pet === "None" ? 0 : randInt(0,20));
+      bd.location = c.location === target.location ? 100 : randInt(10,40);
+
+      const overall = Math.round((bd.age + bd.interest + bd.personality + bd.hobby + bd.pet + bd.location) / 6);
+
+      if(overall > bestScore){
+        bestScore = overall;
+        best = c;
+        bestBreakdown = bd;
+      }
+    });
+
+    state.finalMatch = best;
+    state.finalScore = bestScore;
+    state.breakdown = bestBreakdown;
+  }
+
+  const VERDICTS = [
+    "FINAL VERDICT: CLOSE ENOUGH.",
+    "FINAL VERDICT: STATISTICALLY ACCEPTABLE.",
+    "FINAL VERDICT: THIS IS WHAT YOU GET.",
+    "FINAL VERDICT: WE TRIED SOMETHING."
+  ];
+
+  function renderResult(){
+    const m = state.finalMatch;
+    const bd = state.breakdown;
+    $('resName').textContent = `${m.name}, ${m.age}`;
+    $('resSub').textContent = `${m.location} · ${m.interest} · ${m.personality}`;
+    $('resAvatar').textContent = m.emoji;
+
+    $('resAttrGrid').innerHTML = `
+      <div><span>Interest:</span> ${m.interest}</div>
+      <div><span>Pet:</span> ${m.pet}</div>
+      <div><span>Hobby:</span> ${m.hobby}</div>
+      <div><span>Personality:</span> ${m.personality}</div>
+      <div><span>Location:</span> ${m.location}</div>
+      <div><span>Uselessness score:</span> ${m.uselessness}/100</div>
+    `;
+
+    $('resScore').textContent = state.finalScore + "%";
+
+    const rows = [
+      ["Age", bd.age], ["Interest", bd.interest], ["Personality", bd.personality],
+      ["Hobby", bd.hobby], ["Pet", bd.pet], ["Location", bd.location]
+    ];
+    $('resBreakdown').innerHTML = rows.map(r => `
+      <div class="bd-row">
+        <div class="bd-label mono">${r[0]}</div>
+        <div class="bd-track"><div class="bd-fill" data-w="${r[1]}"></div></div>
+        <div class="bd-pct mono">${r[1]}%</div>
+      </div>
+    `).join('');
+
+    $('verdictBig').textContent = pick(VERDICTS);
+
+    // animate bars after paint
+    requestAnimationFrame(function(){
+      setTimeout(function(){
+        document.querySelectorAll('.bd-fill').forEach(el => {
+          el.style.width = el.getAttribute('data-w') + '%';
+        });
+      }, 50);
+    });
+  }
+
+  /* =========================================================
+     RESULT ACTIONS
+  ========================================================= */
+  $('tryAgainBtn').addEventListener('click', function(){
+    showScreen('landing');
+  });
+  $('acceptFateBtn').addEventListener('click', function(){
+    $('acceptFateBtn').textContent = "FATE ACCEPTED.";
+    $('acceptFateBtn').disabled = true;
+  });
+
+})();
+</script>
+</body>
+</html>
