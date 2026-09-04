@@ -130,7 +130,6 @@ Users can:
 
 ## Technical Details
 ### Technologies/Components Used
-For Software:
 - **Languages used**: JavaScript (ES6+), HTML5, CSS3 (animations, transitions, glassmorphic UI effects)
 - **Frameworks used**: React 18 (component-based architecture), Vite 6, React Router DOM v6
 - **Libraries used**: `@supabase/supabase-js` v2.45, Framer Motion, Lucide React, React Hot Toast
@@ -138,13 +137,7 @@ For Software:
 - **Features & Logic**: Randomization logic, state management (mode, choices, match), wheel spin animations, fake loading systems
 - **Fixed Data Model**: Fixed dataset of ~20 pre-defined characters (Baahubali, Kabir Singh, Minnal Murali, Puli Murugan, Pooja Mathew, Meesha Madhavan, Ramanan, Appukuttan, Nagavalli, Glixon, Sona, Shammi, Malar Miss, George David, Clara, Dasan, Vijayan, Girirajan Kozhi, Sethumadhavan, Mary)
 
-For Hardware:
-- N/A (Pure Software Web Application)
-- Specifications: Any device with a modern web browser and mouse/touch/microphone controls
-- Tools required: Smartphone or PC with Google Chrome, Microsoft Edge, or Mozilla Firefox
-
 ### Implementation
-For Software:
 # Installation
 1. Clone the repository and navigate to the application folder:
 ```bash
@@ -174,7 +167,6 @@ npm run dev
 Open `http://localhost:5173` in your browser.
 
 ### Project Documentation
-For Software:
 
 # Screenshots (Add at least 3)
 ![Landing Page Entry](./screenshots/landing_page.png)
@@ -200,28 +192,9 @@ For Software:
 ### ⚠️ Disclaimer
 This is a parody project. No actual matchmaking intelligence exists. Any emotional damage is purely coincidental.
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](https://via.placeholder.com/600x300?text=Hardware+Not+Applicable)
-*N/A - Software Application*
-
-![Schematic](https://via.placeholder.com/600x300?text=Hardware+Not+Applicable)
-*N/A - Software Application*
-
-# Build Photos
-![Components](https://via.placeholder.com/600x300?text=Software+Only)
-*N/A - Pure Web Application*
-
-![Build](https://via.placeholder.com/600x300?text=Software+Only)
-*N/A - Pure Web Application*
-
-![Final](https://via.placeholder.com/600x300?text=Software+Only)
-*N/A - Pure Web Application*
-
 ### Project Demo
 # Video
-[Demo Video Link](https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd)
+[Demo Video Link](https://drive.google.com/file/d/1tA-TyX_nr2Utg5tb0nalIboT8zo7Lphc/view?usp=sharing)
 *Demonstrates mandatory contract signing, chaotic swipe overrides, escaping send button, and scream reveals.*
 
 # Additional Demos
