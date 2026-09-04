@@ -1,0 +1,262 @@
+/* ===================================================================
+   LAST RESORT™ — Anti-Gravity Romance Design System
+   Dreamy, floating UI with layered depth, vibrant red & blush pink
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* ---- CSS Design Tokens ---- */
+:root {
+  /* Color Palette */
+  --primary: #FF4D6D;           /* Vibrant Red */
+  --primary-hover: #FF758F;     /* Glowing Romantic Rose */
+  --primary-dark: #C9184A;      /* Crimson Passion */
+  --primary-deep: #590D22;      /* Deep Wine Accent */
+  
+  --secondary: #FFB3C1;         /* Blush Pink */
+  --secondary-light: #FFCCD5;   /* Soft Rose Tint */
+  --secondary-glow: rgba(255, 179, 193, 0.6);
+
+  --base-white: #FFFFFF;        /* Clean White */
+  --bg-light: #FFF5F7;          /* Romantic Soft Ambient */
+  --bg-surface: rgba(255, 255, 255, 0.78);
+  --bg-glass: rgba(255, 240, 243, 0.65);
+  
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-bg-hover: rgba(255, 255, 255, 0.96);
+  --card-border: rgba(255, 179, 193, 0.45);
+  --card-border-glow: rgba(255, 77, 109, 0.55);
+
+  --pink: #FF4D6D;
+  --pink-2: #FF758F;
+  --cyan: #38BDF8;
+  --amber: #F59E0B;
+  --green: #10B981;
+  --purple: #EC4899;
+  --red: #EF4444;
+
+  --text-dark: #2B0912;
+  --text-main: #4A1525;
+  --text-muted: #8A4B5C;
+  --text-dim: #B38693;
+  --text-light: #FFFFFF;
+
+  --font: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --mono: 'Space Mono', monospace;
+
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --radius-full: 9999px;
+
+  /* Layered Depth & Anti-Gravity Floating Shadows */
+  --shadow-float: 0 20px 45px -10px rgba(255, 77, 109, 0.22), 0 10px 25px -5px rgba(255, 179, 193, 0.4);
+  --shadow-float-hover: 0 30px 65px -12px rgba(255, 77, 109, 0.38), 0 15px 35px -5px rgba(255, 179, 193, 0.6);
+  --shadow-halo: 0 0 35px rgba(255, 77, 109, 0.45);
+  --shadow-card: 0 12px 40px rgba(255, 77, 109, 0.08), 0 4px 16px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+
+  /* Air-glide Transitions */
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---- Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dreamlike Abstract Background with Floating Orbs */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -100px;
+  background:
+    radial-gradient(circle at 15% 15%, rgba(255, 77, 109, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(255, 179, 193, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 50% 75%, rgba(255, 117, 143, 0.25) 0%, transparent 55%),
+    radial-gradient(circle at 80% 85%, rgba(255, 204, 213, 0.45) 0%, transparent 45%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+  animation: driftBackground 20s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 77, 109, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+}
+
+/* ---- Keyframe Animations for Floating & Motion ---- */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(0.8deg); }
+}
+
+@keyframes floatMedium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-0.8deg); }
+}
+
+@keyframes floatFast {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-5px) scale(1.015); }
+}
+
+@keyframes haloPulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px -5px rgba(255, 77, 109, 0.35), 0 0 20px rgba(255, 179, 193, 0.5);
+  }
+  50% {
+    box-shadow: 0 18px 45px -5px rgba(255, 77, 109, 0.55), 0 0 35px rgba(255, 179, 193, 0.85);
+  }
+}
+
+@keyframes driftBackground {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -25px) scale(1.05); }
+  100% { transform: translate(-20px, 20px) scale(1); }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+/* ---- Floating UI Utility Classes ---- */
+.float-element-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.float-element-medium {
+  animation: floatMedium 4.5s ease-in-out infinite;
+}
+
+.float-element-fast {
+  animation: floatFast 3s ease-in-out infinite;
+}
+
+/* ---- Typography ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+}
+
+.serif-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+button { font-family: var(--font); }
+input, select, textarea { font-family: var(--font); }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(255, 240, 243, 0.5); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+/* ---- Floating Glass Card ---- */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  transition: var(--transition);
+  position: relative;
+}
+
+.glass-card:hover {
+  border-color: var(--card-border-glow);
+  box-shadow: var(--shadow-float-hover);
+  transform: translateY(-6px);
+}
+
+/* ---- Gradient Text Utilities ---- */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.gradient-text-blush {
+  background: linear-gradient(135deg, #FF4D6D 0%, #FF758F 50%, #C9184A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #FFB3C1 0%, #FF4D6D 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mono { font-family: var(--mono); }
+
+/* ---- Shimmer Skeleton ---- */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255, 204, 213, 0.4) 25%, rgba(255, 240, 243, 0.8) 50%, rgba(255, 204, 213, 0.4) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---- Focus Visible ---- */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---- Toast Overrides ---- */
+.toast-container {
+  font-family: var(--font) !important;
+  font-size: 0.88rem !important;
+}

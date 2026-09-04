@@ -2,102 +2,104 @@
 
 
 
-# [Project Name] 🎯
+# LAST RESORT™ 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: Out Of Option
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: Ishan Aleny - Model Engineering College
+- Member 2: Team Member 2 - College
+- Member 3: Team Member 3 - College
 
 ### Project Description
-[2-3 lines about what your project does]
+LAST RESORT™ is a chaotic anti-gravity dating web application designed for people exhausted by modern dating apps. It strips away romantic autonomy through randomized destiny modes, binding anti-swipe contracts, escaping send buttons, and anonymous scream reveals.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+Modern dating apps grant users far too much choice and control, leading to endless swiping, decision paralysis, ghosting after three dry texts, and unrealistic standards.
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+We built an Anti-Swipe platform where swiping is outlawed, your swipe choices are randomly overruled by government algorithm regulations, send buttons sabotage your text attempts by running away, and you must scream into your microphone to reveal your match's identity.
 
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
+- Languages used: JavaScript (ES6+), HTML5, CSS3, SQL (PostgreSQL)
+- Frameworks used: React 18, Vite 6, React Router DOM v6
+- Libraries used: @supabase/supabase-js, Framer Motion, Lucide React, React Hot Toast
+- Tools used: Supabase (Auth, Database, Storage), Node.js, npm, Git
 
 For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- N/A (Pure Software Web Application)
+- Specifications: Any device with a modern web browser and mouse/touch controls
+- Tools required: Smartphone or PC with Chrome / Edge / Firefox
 
 ### Implementation
 For Software:
 # Installation
-[commands]
+```bash
+cd dateing_web
+npm install
+```
 
 # Run
-[commands]
+```bash
+npm run dev
+```
 
 ### Project Documentation
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+![Landing Page](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788480368660.png)
+*LAST RESORT™ Landing Page featuring the Form LR-2026 mandatory anti-swipe contract waiver.*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+![Anti-Swipe Tinder Deck](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788476047917.png)
+*Tinder-style Anti-Swipe Protocol card deck where user swipes are overrode by the algorithm.*
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+![Complementary Vibe Match](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788476551002.png)
+*Complementary Vibe Match mode showcasing opposite energy candidate pairings.*
 
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+![Workflow](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788477221216.png)
+*User journey from landing waiver to chaotic fate modes and sabotaged send button chat.*
 
 For Hardware:
 
 # Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
+![Circuit](https://via.placeholder.com/600x300?text=Hardware+Not+Applicable)
+*N/A - Software Application*
 
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
+![Schematic](https://via.placeholder.com/600x300?text=Hardware+Not+Applicable)
+*N/A - Software Application*
 
 # Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
+![Components](https://via.placeholder.com/600x300?text=Software+Only)
+*N/A - Pure Web Application*
 
-![Build](Add photos of build process here)
-*Explain the build steps*
+![Build](https://via.placeholder.com/600x300?text=Software+Only)
+*N/A - Pure Web Application*
 
-![Final](Add photo of final product here)
-*Explain the final build*
+![Final](https://via.placeholder.com/600x300?text=Software+Only)
+*N/A - Pure Web Application*
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
+[Demo Video Link](https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd)
+*Demonstrates mandatory contract signing, chaotic swipe overrides, escaping send button, and scream reveals.*
 
 # Additional Demos
-[Add any extra demo materials/links]
+[Project Repository & Live Demo](https://github.com/user-attachments/assets)
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Ishan Aleny: Core React Architecture, Anti-Swipe Tinder Deck, Supabase Integration, Escaping Send Button Sabotage Logic
+- Member 2: Vibe Match Harmonizer Quiz & Floating Glassmorphic Aesthetic Design System
+- Member 3: Anonymous Scream Reveal Protocol & PostgreSQL Movie Character Seed Dataset
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
 
 ![Static Badge](https://img.shields.io/badge/TinkerHub-24?color=%23000000&link=https%3A%2F%2Fwww.tinkerhub.org%2F)
 ![Static Badge](https://img.shields.io/badge/UselessProjects--26-26?link=https%3A%2F%2Ftinkerhub.org%2Fevents%2F1M8ORET9A1%2Fuseless-projects-3.0)
-
-
-

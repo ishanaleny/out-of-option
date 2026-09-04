@@ -1,1078 +1,1910 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LAST RESORT™ — The Dating App You Use When Every Other Option Has Failed</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAST RESORT™ — React & Supabase Edition</title>
 
-  :root{
-    --bg:#0a0a0f;
-    --bg-alt:#120a1c;
-    --panel:#15101f;
-    --pink:#ff2e88;
-    --cyan:#00e6d8;
-    --yellow:#ffcb3d;
-    --ink:#eee9f5;
-    --dim:#8d84a3;
-    --line:#2b2340;
-    --danger:#ff5c5c;
-  }
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
 
-  *{box-sizing:border-box;}
+  <!-- React 18, ReactDOM 18, Babel Standalone & Supabase JS Client via CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  html,body{
-    margin:0;padding:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Space Grotesk', sans-serif;
-    overflow-x:hidden;
-  }
+  <style>
+    /* =========================================================
+       GLOBAL RESETS & STYLING
+       ========================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  ::selection{background:var(--pink);color:#0a0a0f;}
+    :root {
+      --bg-dark: #090a0f;
+      --card-bg: rgba(18, 20, 29, 0.88);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f0f3f8;
+      --text-muted: #8b949e;
+      --accent-pink: #ff2d60;
+      --accent-cyan: #00f2fe;
+      --accent-amber: #ffb703;
+      --accent-green: #2ecc71;
+      --border-glow: rgba(255, 45, 96, 0.3);
+      --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
 
-  body{
-    min-height:100vh;
-    background-image:
-      radial-gradient(circle at 15% 20%, rgba(255,46,136,.10), transparent 45%),
-      radial-gradient(circle at 85% 80%, rgba(0,230,216,.10), transparent 45%);
-  }
+    body {
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(ellipse at 20% 20%, rgba(255, 45, 96, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(0, 242, 254, 0.08) 0%, transparent 50%);
+      color: var(--text-main);
+      font-family: var(--font-heading);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
 
-  .mono{font-family:'JetBrains Mono', monospace;}
+    #root {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem 4rem 1rem;
+    }
 
-  .screen{
-    display:none;
-    min-height:100vh;
-    width:100%;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    padding:5vh 6vw;
-    position:relative;
-  }
-  .screen.active{display:flex;}
+    /* Section animations */
+    .section-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.28s ease-out;
+    }
 
-  .noise-tag{
-    position:fixed;
-    top:18px;left:22px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:.08em;
-    color:var(--dim);
-    z-index:50;
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-  .noise-tag .dot{
-    width:7px;height:7px;border-radius:50%;
-    background:var(--danger);
-    box-shadow:0 0 8px var(--danger);
-    animation:pulse 1.6s infinite;
-  }
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
 
-  /* ---------- LANDING ---------- */
-  #landing{
-    text-align:center;
-  }
-  .glitch-wrap{position:relative;}
-  .brand{
-    font-size:clamp(2.6rem, 9vw, 6rem);
-    font-weight:700;
-    line-height:0.95;
-    letter-spacing:-.02em;
-    position:relative;
-    margin:0;
-    color:var(--ink);
-  }
-  .brand .tm{font-size:.35em;vertical-align:super;color:var(--pink);}
-  .brand::before, .brand::after{
-    content:attr(data-text);
-    position:absolute;
-    left:0;top:0;
-    width:100%;
-    overflow:hidden;
-    background:var(--bg);
-    clip-path: inset(0 0 0 0);
-  }
-  .brand::before{
-    color:var(--pink);
-    animation:glitchTop 3.4s infinite linear;
-    z-index:-1;
-  }
-  .brand::after{
-    color:var(--cyan);
-    animation:glitchBottom 3.9s infinite linear;
-    z-index:-1;
-  }
-  @keyframes glitchTop{
-    0%,92%,100%{clip-path:inset(0 0 92% 0); transform:translate(0,0);}
-    93%{clip-path:inset(10% 0 55% 0); transform:translate(-3px,-1px);}
-    95%{clip-path:inset(60% 0 5% 0); transform:translate(3px,1px);}
-    97%{clip-path:inset(30% 0 40% 0); transform:translate(-2px,0);}
-  }
-  @keyframes glitchBottom{
-    0%,90%,100%{clip-path:inset(92% 0 0 0); transform:translate(0,0);}
-    91%{clip-path:inset(20% 0 60% 0); transform:translate(3px,1px);}
-    94%{clip-path:inset(70% 0 5% 0); transform:translate(-3px,-1px);}
-    98%{clip-path:inset(45% 0 30% 0); transform:translate(2px,0);}
-  }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-  .tagline{
-    font-family:'JetBrains Mono', monospace;
-    color:var(--dim);
-    font-size:clamp(.8rem, 1.6vw, 1.05rem);
-    margin-top:18px;
-    letter-spacing:.01em;
-  }
-  .rock-bottom{
-    margin-top:6px;
-    font-size:clamp(1rem, 2vw, 1.3rem);
-    color:var(--yellow);
-    font-weight:500;
-  }
+    /* Card Container */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.75rem 2.25rem;
+      max-width: 620px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+    }
 
-  .cta-btn{
-    margin-top:52px;
-    padding:18px 44px;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:1.05rem;
-    font-weight:700;
-    letter-spacing:.02em;
-    color:var(--bg);
-    background:linear-gradient(100deg, var(--pink), var(--cyan));
-    border:none;
-    border-radius:2px;
-    cursor:pointer;
-    position:relative;
-    transition:transform .18s ease, box-shadow .18s ease;
-    box-shadow:0 0 0 rgba(255,46,136,0);
-  }
-  .cta-btn:hover{
-    transform:translate(-2px,-2px) rotate(-.4deg);
-    box-shadow:6px 6px 0 var(--pink), -3px -3px 0 var(--cyan);
-  }
-  .cta-btn:active{transform:translate(0,0) scale(.98);}
-  .cta-btn.secondary{
-    background:transparent;
-    color:var(--ink);
-    border:1px solid var(--line);
-    box-shadow:none;
-  }
-  .cta-btn.secondary:hover{
-    border-color:var(--pink);
-    box-shadow:4px 4px 0 var(--pink);
-  }
-  .cta-btn.ghost{
-    background:transparent;
-    color:var(--dim);
-    border:1px dashed var(--line);
-    font-size:.85rem;
-    padding:10px 20px;
-    box-shadow:none;
-  }
+    /* User Top Status Bar */
+    .user-top-bar {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(18, 20, 29, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 16px;
+      margin-bottom: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      backdrop-filter: blur(10px);
+    }
 
-  .warning-strip{
-    margin-top:70px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.7rem;
-    color:var(--dim);
-    letter-spacing:.06em;
-    max-width:520px;
-  }
+    .user-top-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
 
-  /* ---------- SHARED PANEL ---------- */
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:4px;
-    padding:40px 36px;
-    max-width:560px;
-    width:100%;
-    position:relative;
-  }
-  .panel::before{
-    content:'';
-    position:absolute;
-    top:0;left:0;right:0;
-    height:3px;
-    background:linear-gradient(90deg, var(--pink), var(--cyan));
-  }
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:.72rem;
-    color:var(--pink);
-    letter-spacing:.05em;
-    margin-bottom:14px;
-  }
-  h2.q-title{
-    font-size:clamp(1.4rem,3vw,1.9rem);
-    margin:0 0 30px 0;
-    line-height:1.25;
-  }
-  .options-grid{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-  .opt-btn{
-    background:var(--bg-alt);
-    border:1px solid var(--line);
-    color:var(--ink);
-    padding:16px 18px;
-    text-align:left;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:1rem;
-    border-radius:3px;
-    cursor:pointer;
-    transition:all .15s ease;
-  }
-  .opt-btn:hover{
-    border-color:var(--cyan);
-    background:rgba(0,230,216,.06);
-    transform:translateX(4px);
-  }
+    .user-top-info strong {
+      color: var(--accent-cyan);
+    }
 
-  /* ---------- OPPOSITE MODE ---------- */
-  .field-row{margin-bottom:18px;}
-  .field-row label{
-    display:block;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.72rem;
-    color:var(--dim);
-    margin-bottom:7px;
-    letter-spacing:.04em;
-  }
-  .field-row input, .field-row select{
-    width:100%;
-    background:var(--bg-alt);
-    border:1px solid var(--line);
-    color:var(--ink);
-    padding:12px 14px;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:.95rem;
-    border-radius:3px;
-  }
-  .field-row input:focus, .field-row select:focus, .opt-btn:focus, .cta-btn:focus{
-    outline:2px solid var(--cyan);
-    outline-offset:2px;
-  }
+    .user-top-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-  .reveal-box{
-    margin-top:24px;
-    padding:18px;
-    border:1px dashed var(--danger);
-    border-radius:3px;
-    background:rgba(255,92,92,.05);
-  }
-  .reveal-row{
-    display:flex;justify-content:space-between;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.85rem;
-    padding:6px 0;
-    border-bottom:1px solid var(--line);
-  }
-  .reveal-row:last-child{border-bottom:none;}
-  .reveal-row .you{color:var(--dim);}
-  .reveal-row .opp{color:var(--pink);font-weight:700;}
+    .user-top-btn:hover {
+      color: var(--accent-pink);
+      border-color: var(--accent-pink);
+    }
 
-  /* ---------- ANTI-SWIPE ---------- */
-  .swipe-stage{
-    position:relative;
-    width:100%;
-    max-width:340px;
-    height:460px;
-    margin:0 auto;
-  }
-  .swipe-card{
-    position:absolute;
-    inset:0;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:0;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    box-shadow:0 20px 50px rgba(0,0,0,.5);
-    transition:transform .35s cubic-bezier(.2,.8,.3,1), opacity .35s ease;
-    cursor:grab;
-  }
-  .swipe-card .photo{
-    height:62%;
-    background:linear-gradient(135deg, var(--bg-alt), #241638);
-    display:flex;align-items:center;justify-content:center;
-    font-size:4rem;
-  }
-  .swipe-card .info{
-    padding:18px 20px;
-    flex:1;
-  }
-  .swipe-card .info h3{margin:0 0 6px 0;font-size:1.3rem;}
-  .swipe-card .info p{margin:0;color:var(--dim);font-size:.85rem;font-family:'JetBrains Mono', monospace;}
-  .swipe-card.fly-left{transform:translateX(-160%) rotate(-18deg);opacity:0;}
-  .swipe-card.fly-right{transform:translateX(160%) rotate(18deg);opacity:0;}
-  .swipe-stamp{
-    position:absolute;
-    top:26px;
-    font-family:'JetBrains Mono', monospace;
-    font-weight:700;
-    font-size:1.1rem;
-    padding:6px 14px;
-    border:3px solid;
-    border-radius:6px;
-    transform:rotate(-14deg);
-    opacity:0;
-    transition:opacity .12s ease;
-    letter-spacing:.05em;
-    z-index:5;
-  }
-  .stamp-left{left:22px;border-color:var(--danger);color:var(--danger);}
-  .stamp-right{right:22px;border-color:var(--cyan);color:var(--cyan);transform:rotate(14deg);}
+    /* Typography */
+    .brand-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: #ffffff;
+    }
 
-  .swipe-controls{
-    display:flex;
-    gap:26px;
-    margin-top:30px;
-  }
-  .swipe-controls button{
-    width:58px;height:58px;
-    border-radius:50%;
-    border:1px solid var(--line);
-    background:var(--panel);
-    color:var(--ink);
-    font-size:1.4rem;
-    cursor:pointer;
-    transition:transform .15s ease;
-  }
-  .swipe-controls button:hover{transform:scale(1.1);}
-  .swipe-controls .reject{border-color:var(--danger);color:var(--danger);}
-  .swipe-controls .accept{border-color:var(--cyan);color:var(--cyan);}
+    .brand-gradient {
+      background: linear-gradient(135deg, #ff2d60, #ff758c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-  .toast-msg{
-    margin-top:20px;
-    min-height:24px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.85rem;
-    color:var(--yellow);
-    text-align:center;
-  }
-  .swipe-count{
-    font-family:'JetBrains Mono', monospace;
-    font-size:.75rem;
-    color:var(--dim);
-    margin-top:4px;
-  }
+    .tagline {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
 
-  /* ---------- WHEEL OF FATE ---------- */
-  .wheels-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
-    gap:16px;
-    width:100%;
-    max-width:760px;
-  }
-  .wheel-box{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:14px;
-    text-align:center;
-  }
-  .wheel-box .label{
-    font-family:'JetBrains Mono', monospace;
-    font-size:.68rem;
-    color:var(--dim);
-    letter-spacing:.06em;
-    margin-bottom:10px;
-  }
-  .wheel-window{
-    height:76px;
-    overflow:hidden;
-    border:1px solid var(--line);
-    border-radius:4px;
-    background:var(--bg-alt);
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .wheel-strip{
-    display:flex;
-    flex-direction:column;
-    transition:transform 2.2s cubic-bezier(.15,.85,.25,1);
-  }
-  .wheel-cell{
-    height:76px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    font-size:.95rem;
-    padding:0 6px;
-    text-align:center;
-  }
-  .wheel-box.locked .wheel-window{border-color:var(--cyan);box-shadow:0 0 14px rgba(0,230,216,.25);}
+    .rock-bottom {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent-amber);
+      margin: 0.25rem 0;
+    }
 
-  .spin-all-btn{margin-top:36px;}
+    .risk-warning {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent-pink);
+    }
 
-  .loading-wrap{
-    margin-top:30px;
-    width:100%;
-    max-width:460px;
-    text-align:center;
-  }
-  .loading-bar-track{
-    width:100%;
-    height:10px;
-    background:var(--bg-alt);
-    border:1px solid var(--line);
-    border-radius:6px;
-    overflow:hidden;
-    margin-bottom:14px;
-  }
-  .loading-bar-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg, var(--pink), var(--cyan));
-    transition:width .25s linear;
-  }
-  .loading-line{
-    font-family:'JetBrains Mono', monospace;
-    font-size:.8rem;
-    color:var(--dim);
-    min-height:20px;
-  }
+    .disclaimer {
+      font-size: 0.85rem;
+      color: #6b7280;
+      line-height: 1.45;
+      max-width: 440px;
+    }
 
-  /* ---------- RESULT ---------- */
-  .result-card{
-    max-width:600px;
-    width:100%;
-  }
-  .match-banner{
-    font-family:'JetBrains Mono', monospace;
-    letter-spacing:.06em;
-    color:var(--pink);
-    font-size:.8rem;
-    margin-bottom:10px;
-  }
-  .match-name{
-    font-size:2.2rem;
-    font-weight:700;
-    margin:0 0 4px 0;
-  }
-  .match-sub{
-    color:var(--dim);
-    font-family:'JetBrains Mono', monospace;
-    font-size:.85rem;
-    margin-bottom:22px;
-  }
-  .match-avatar{
-    width:100%;
-    height:150px;
-    border-radius:6px;
-    background:linear-gradient(135deg, var(--bg-alt), #241638);
-    display:flex;align-items:center;justify-content:center;
-    font-size:3.6rem;
-    margin-bottom:22px;
-    border:1px solid var(--line);
-  }
-  .attr-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px 20px;
-    margin-bottom:24px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.82rem;
-  }
-  .attr-grid div span{color:var(--dim);}
-  .compat-score{
-    text-align:center;
-    margin:26px 0;
-  }
-  .compat-score .num{
-    font-size:3.4rem;
-    font-weight:700;
-    color:var(--cyan);
-    line-height:1;
-  }
-  .compat-score .lbl{
-    font-family:'JetBrains Mono', monospace;
-    font-size:.72rem;
-    color:var(--dim);
-    letter-spacing:.08em;
-    margin-top:4px;
-  }
-  .breakdown{margin-bottom:26px;}
-  .bd-row{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:9px;
-  }
-  .bd-row .bd-label{
-    width:90px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.72rem;
-    color:var(--dim);
-    flex-shrink:0;
-  }
-  .bd-track{
-    flex:1;
-    height:7px;
-    background:var(--bg-alt);
-    border-radius:6px;
-    overflow:hidden;
-  }
-  .bd-fill{
-    height:100%;
-    background:linear-gradient(90deg, var(--pink), var(--cyan));
-    width:0%;
-    transition:width 1s ease;
-  }
-  .bd-pct{
-    width:38px;
-    text-align:right;
-    font-family:'JetBrains Mono', monospace;
-    font-size:.75rem;
-    color:var(--ink);
-  }
-  .verdict{
-    border-top:1px solid var(--line);
-    padding-top:20px;
-    text-align:center;
-  }
-  .verdict .big{
-    font-size:1.15rem;
-    font-weight:700;
-    color:var(--yellow);
-    margin-bottom:6px;
-  }
-  .verdict .small{
-    color:var(--dim);
-    font-size:.85rem;
-    font-family:'JetBrains Mono', monospace;
-    margin-bottom:2px;
-  }
-  .result-actions{
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    margin-top:30px;
-    flex-wrap:wrap;
-  }
+    .heading-large {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
 
-  @media (max-width:480px){
-    .panel{padding:28px 20px;}
-    .swipe-stage{max-width:280px;height:400px;}
-  }
+    .mode-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 0.25rem;
+      line-height: 1.4;
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
-  }
-</style>
+    .question-prompt {
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Auth & Onboarding Styling */
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 12px;
+      width: 100%;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.65rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab-btn.active {
+      background: var(--accent-pink);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(255, 45, 96, 0.4);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      text-align: left;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #d1d5db;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      color: var(--text-main);
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 10px rgba(255, 45, 96, 0.25);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .auth-alert {
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .auth-alert.error {
+      background: rgba(255, 45, 96, 0.15);
+      color: #ff758c;
+      border: 1px solid rgba(255, 45, 96, 0.3);
+    }
+
+    .auth-alert.success {
+      background: rgba(46, 204, 113, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    /* Buttons */
+    button {
+      font-family: var(--font-heading);
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-pink) 0%, #ff527b 100%);
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.95rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(255, 45, 96, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px -4px rgba(255, 45, 96, 0.6);
+      filter: brightness(1.08);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-exit {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 0.85rem 2rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-exit:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    /* Number Selection Grid */
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .btn-number {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.25rem 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-number:hover {
+      background: rgba(255, 45, 96, 0.12);
+      border-color: var(--accent-pink);
+      color: var(--accent-pink);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px -4px rgba(255, 45, 96, 0.3);
+    }
+
+    /* Questions & Form styling */
+    .questions-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      text-align: left;
+    }
+
+    .q-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .q-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .radio-label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .radio-label.selected {
+      background: rgba(255, 45, 96, 0.12);
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 10px rgba(255, 45, 96, 0.2);
+    }
+
+    .radio-label input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      margin-right: 0.6rem;
+      outline: none;
+      transition: all 0.2s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .radio-label.selected input[type="radio"] {
+      border-color: var(--accent-pink);
+      background-color: var(--accent-pink);
+      box-shadow: 0 0 8px var(--accent-pink);
+    }
+
+    .radio-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    /* Analyzing Screen */
+    .analyzing-box {
+      padding: 3rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .analyzing-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255, 45, 96, 0.2);
+      border-top-color: var(--accent-pink);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .analyzing-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Match Profile Cards */
+    .match-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .match-header {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--accent-pink);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .match-profile-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.5rem;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .match-profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.75rem;
+    }
+
+    .match-name-age {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .match-personality-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: rgba(255, 45, 96, 0.15);
+      border: 1px solid rgba(255, 45, 96, 0.4);
+      color: var(--accent-pink);
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .match-bio-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .db-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .compatibility-banner {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      background: rgba(255, 183, 3, 0.08);
+      border: 1px dashed rgba(255, 183, 3, 0.4);
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      letter-spacing: 0.03em;
+      text-align: center;
+      width: 100%;
+    }
+
+    .waste-time-banner {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ff758c;
+      background: rgba(255, 45, 96, 0.08);
+      border: 1px solid rgba(255, 45, 96, 0.3);
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.5rem;
+      line-height: 1.45;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* Useless Mode Steps */
+    .useless-step-box {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      text-align: center;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .volume-meter-track {
+      width: 100%;
+      max-width: 380px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 13px;
+      overflow: hidden;
+      position: relative;
+      margin: 0.5rem 0;
+    }
+
+    .volume-meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffcb3d, #ff2d60);
+      transition: width 0.2s ease;
+      border-radius: 13px;
+    }
+
+    .volume-meter-label {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+    }
+
+    .mosquito-arena {
+      width: 100%;
+      max-width: 440px;
+      height: 220px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px dashed rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      margin: 0.5rem 0;
+      cursor: crosshair;
+    }
+
+    @keyframes mosquitoBuzz {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate(-3px, 2px) rotate(-10deg);
+      }
+
+      50% {
+        transform: translate(3px, -2px) rotate(10deg);
+      }
+
+      75% {
+        transform: translate(-2px, -3px) rotate(-6deg);
+      }
+
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+    }
+
+    .mosquito {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
+      animation: mosquitoBuzz 0.12s infinite linear;
+      transform: translate(-50%, -50%);
+    }
+
+    .mosquito.squashed {
+      animation: none !important;
+      transform: scale(1.3) rotate(45deg) !important;
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px rgba(255, 45, 96, 0.8));
+    }
+
+    .mosquito-status {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      min-height: 1.6rem;
+      color: var(--accent-cyan);
+    }
+
+    /* Supabase Sync Status Footer Bar */
+    .supabase-bar {
+      position: fixed;
+      bottom: 12px;
+      background: rgba(14, 17, 26, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .supabase-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    .btn-seed {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .btn-seed:hover {
+      background: rgba(0, 242, 254, 0.25);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 2rem 1.25rem;
+      }
+
+      .brand-title {
+        font-size: 1.8rem;
+      }
+
+      .number-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .supabase-bar {
+        font-size: 0.65rem;
+        padding: 5px 12px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="noise-tag mono"><span class="dot"></span> SYSTEM STATUS: BARELY OPERATIONAL</div>
+  <!-- React Mount Root -->
+  <div id="root"></div>
 
-<!-- ===================== LANDING ===================== -->
-<section id="landing" class="screen active">
-  <div class="glitch-wrap">
-    <h1 class="brand" data-text="LAST RESORT">LAST RESORT<span class="tm">™</span></h1>
-  </div>
-  <p class="tagline">The dating app you use when every other option has failed.</p>
-  <p class="rock-bottom">You have officially hit rock bottom. ❤️</p>
-  <button class="cta-btn" id="findMeBtn">FIND ME SOMEONE</button>
-  <p class="warning-strip mono">By continuing you acknowledge that our algorithm has given up trying to understand what you want, and so, frankly, have we.</p>
-</section>
+  <!-- React Application Component Scripts -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-<!-- ===================== FATE QUESTION ===================== -->
-<section id="fate" class="screen">
-  <div class="panel">
-    <div class="eyebrow mono">STEP 1 / FATE CALIBRATION</div>
-    <h2 class="q-title" id="fateQuestion">Loading existential question...</h2>
-    <div class="options-grid" id="fateOptions"></div>
-  </div>
-</section>
+    // =========================================================
+    // 1. SUPABASE CLIENT CONFIGURATION
+    // =========================================================
+    const SUPABASE_URL = 'https://plblppbbdvyhnwjulezz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYmxwcGJiZHZ5aG53anVsZXp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0NTU4NjMsImV4cCI6MjEwNDAzMTg2M30.l7ptAHukRTQBURhxuA-AjaUKhb-hS5sIC6Ug08_I1Lw';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<!-- ===================== MODE: OPPOSITE ===================== -->
-<section id="modeOpposite" class="screen">
-  <div class="panel">
-    <div class="eyebrow mono">MODE: THE OPPOSITE</div>
-    <h2 class="q-title">Tell us what you're looking for.<br>We'll remember it, so we can ignore it.</h2>
-    <div class="field-row">
-      <label>Ideal personality</label>
-      <select id="oppPersonality">
-        <option>Kind</option><option>Funny</option><option>Ambitious</option>
-        <option>Calm</option><option>Adventurous</option><option>Loyal</option>
-      </select>
-    </div>
-    <div class="field-row">
-      <label>Favorite hobby to share</label>
-      <select id="oppHobby">
-        <option>Hiking</option><option>Reading</option><option>Cooking</option>
-        <option>Gaming</option><option>Painting</option><option>Dancing</option>
-      </select>
-    </div>
-    <div class="field-row">
-      <label>A trait you can't live without</label>
-      <select id="oppTrait">
-        <option>Honesty</option><option>Punctuality</option><option>Humor</option>
-        <option>Ambition</option><option>Patience</option><option>Affection</option>
-      </select>
-    </div>
-    <button class="cta-btn" id="oppSubmit">LOCK IN MY PREFERENCES</button>
-    <div class="reveal-box" id="oppReveal" style="display:none;">
-      <div class="eyebrow mono" style="color:var(--danger);">PERFECT. WE KNOW EXACTLY WHO NOT TO SHOW YOU.</div>
-      <div id="oppRevealRows"></div>
-      <button class="cta-btn secondary" id="oppContinue" style="margin-top:20px;">CONTINUE ANYWAY</button>
-    </div>
-  </div>
-</section>
+    // =========================================================
+    // 2. HELPER FUNCTIONS: FETCH ONLY REAL USERS FROM DATABASE
+    // =========================================================
+    async function fetchProfilesFromSupabase(excludeEmail) {
+      try {
+        let query = supabase.from('profiles').select('*');
+        if (excludeEmail) {
+          query = query.neq('email', excludeEmail);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        return data || [];
+      } catch (err) {
+        console.error('Error fetching real profiles from Supabase:', err);
+        return [];
+      }
+    }
 
-<!-- ===================== MODE: ANTI-SWIPE ===================== -->
-<section id="modeSwipe" class="screen">
-  <div class="eyebrow mono" style="margin-bottom:20px;">MODE: ANTI-SWIPE</div>
-  <div class="swipe-stage" id="swipeStage">
-    <div class="swipe-stamp stamp-left mono" id="stampLeft">REJECTED</div>
-    <div class="swipe-stamp stamp-right mono" id="stampRight">REJECTED</div>
-  </div>
-  <div class="swipe-controls">
-    <button class="reject" id="swipeLeftBtn">✕</button>
-    <button class="accept" id="swipeRightBtn">♥</button>
-  </div>
-  <div class="toast-msg mono" id="swipeToast">Swipe right for someone you like. It will not work.</div>
-  <div class="swipe-count mono" id="swipeCount">Card 1 of 6</div>
-</section>
-
-<!-- ===================== MODE: WHEEL OF FATE ===================== -->
-<section id="modeWheel" class="screen">
-  <div class="eyebrow mono" style="margin-bottom:6px;">MODE: WHEEL OF FATE</div>
-  <h2 class="q-title" style="text-align:center;">Spin every wheel. Face the consequences.</h2>
-  <div class="wheels-grid" id="wheelsGrid"></div>
-  <button class="cta-btn spin-all-btn" id="spinAllBtn">SPIN ALL WHEELS</button>
-  <div class="loading-wrap" id="loadingWrap" style="display:none;">
-    <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingFill"></div></div>
-    <div class="loading-line mono" id="loadingLine">Initializing regret engine...</div>
-  </div>
-</section>
-
-<!-- ===================== RESULT ===================== -->
-<section id="result" class="screen">
-  <div class="panel result-card">
-    <div class="match-banner mono">❤️ MATCH FOUND</div>
-    <h2 class="match-name" id="resName">—</h2>
-    <div class="match-sub mono" id="resSub">—</div>
-    <div class="match-avatar" id="resAvatar">🙂</div>
-    <div class="attr-grid" id="resAttrGrid"></div>
-    <div class="compat-score">
-      <div class="num" id="resScore">0%</div>
-      <div class="lbl mono">OVERALL COMPATIBILITY</div>
-    </div>
-    <div class="breakdown" id="resBreakdown"></div>
-    <div class="verdict">
-      <div class="big" id="verdictBig">FINAL VERDICT: CLOSE ENOUGH.</div>
-      <div class="small">We had to compromise on a few things.</div>
-      <div class="small">Mostly everything.</div>
-    </div>
-    <div class="result-actions">
-      <button class="cta-btn" id="tryAgainBtn">TRY YOUR LUCK AGAIN</button>
-      <button class="cta-btn ghost" id="acceptFateBtn">ACCEPT FATE</button>
-    </div>
-  </div>
-</section>
-
-<script>
-(function(){
-  "use strict";
-
-  /* =========================================================
-     UTILITIES
-  ========================================================= */
-  function $(id){ return document.getElementById(id); }
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    $(id).classList.add('active');
-    window.scrollTo(0,0);
-  }
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-
-  /* =========================================================
-     PRESET CHARACTER DATABASE (20 profiles — the only humans who exist)
-  ========================================================= */
-  const CHARACTERS = [
-    {name:"Rashmi",   age:29, location:"Kochi",      interest:"Gaming",      personality:"Chaotic",   hobby:"Streaming",  pet:"Dog",     uselessness:72, emoji:"🎮"},
-    {name:"Arjun",    age:34, location:"Bangalore",  interest:"Fitness",     personality:"Intense",   hobby:"Gym",        pet:"None",    uselessness:41, emoji:"🏋️"},
-    {name:"Meera",    age:26, location:"Mumbai",     interest:"Art",         personality:"Dreamy",    hobby:"Painting",   pet:"Cat",     uselessness:88, emoji:"🎨"},
-    {name:"Kabir",    age:31, location:"Delhi",      interest:"Startups",    personality:"Anxious",   hobby:"Networking", pet:"Fish",    uselessness:95, emoji:"💼"},
-    {name:"Ananya",   age:24, location:"Kochi",      interest:"Books",       personality:"Quiet",     hobby:"Reading",    pet:"Cat",     uselessness:33, emoji:"📚"},
-    {name:"Vikram",   age:38, location:"Chennai",    interest:"Cars",        personality:"Loud",      hobby:"Racing",     pet:"None",    uselessness:64, emoji:"🚗"},
-    {name:"Divya",    age:27, location:"Pune",       interest:"Cooking",     personality:"Warm",      hobby:"Baking",     pet:"Dog",     uselessness:12, emoji:"🍳"},
-    {name:"Rohan",    age:30, location:"Hyderabad",  interest:"Crypto",      personality:"Delusional",hobby:"Trading",    pet:"None",    uselessness:99, emoji:"📉"},
-    {name:"Sneha",    age:25, location:"Kolkata",    interest:"Music",       personality:"Moody",     hobby:"Singing",    pet:"Bird",    uselessness:57, emoji:"🎤"},
-    {name:"Aditya",   age:33, location:"Kochi",      interest:"Hiking",      personality:"Adventurous",hobby:"Trekking",  pet:"Dog",     uselessness:22, emoji:"⛰️"},
-    {name:"Priya",    age:28, location:"Goa",        interest:"Yoga",        personality:"Calm",      hobby:"Meditation", pet:"Cat",     uselessness:19, emoji:"🧘"},
-    {name:"Karthik",  age:36, location:"Bangalore",  interest:"Coding",      personality:"Detached",  hobby:"Debugging",  pet:"None",    uselessness:76, emoji:"💻"},
-    {name:"Fatima",   age:23, location:"Mumbai",     interest:"Fashion",     personality:"Confident", hobby:"Styling",    pet:"Dog",     uselessness:44, emoji:"👗"},
-    {name:"Nikhil",   age:35, location:"Delhi",      interest:"Politics",    personality:"Argumentative",hobby:"Debating",pet:"None",    uselessness:83, emoji:"🗳️"},
-    {name:"Ishita",   age:29, location:"Kochi",      interest:"Gaming",      personality:"Sarcastic", hobby:"Speedrunning",pet:"Fish",   uselessness:66, emoji:"🕹️"},
-    {name:"Farhan",   age:32, location:"Chennai",    interest:"Movies",      personality:"Nostalgic", hobby:"Collecting", pet:"Cat",     uselessness:51, emoji:"🎬"},
-    {name:"Tara",     age:26, location:"Pune",       interest:"Dance",       personality:"Energetic", hobby:"Choreography",pet:"Dog",    uselessness:9,  emoji:"💃"},
-    {name:"Sameer",   age:40, location:"Kochi",      interest:"Fishing",     personality:"Patient",   hobby:"Fishing",    pet:"None",    uselessness:5,  emoji:"🎣"},
-    {name:"Nandini",  age:27, location:"Hyderabad",  interest:"Astrology",   personality:"Mystical",  hobby:"Stargazing", pet:"Cat",     uselessness:91, emoji:"🔮"},
-    {name:"Dev",      age:31, location:"Kolkata",    interest:"Gaming",      personality:"Chaotic",   hobby:"Cosplay",    pet:"Bird",    uselessness:79, emoji:"👾"}
-  ];
-
-  /* =========================================================
-     STATE
-  ========================================================= */
-  const state = {
-    mode: null,
-    wheelResult: {},
-    finalMatch: null,
-    finalScore: 0,
-    breakdown: {}
-  };
-
-  /* =========================================================
-     LANDING -> FATE QUESTION
-  ========================================================= */
-  const FATE_QUESTIONS = [
-    { q: "Pick a number:", opts: ["7","13","42","69","∞"] },
-    { q: "Choose a vibe:", opts: ["Chaos","Regret","Delusion","Hope"] },
-    { q: "Choose a time:", opts: ["2AM","3AM","4AM"] }
-  ];
-  const MODES = ["modeOpposite","modeSwipe","modeWheel"];
-
-  $('findMeBtn').addEventListener('click', function(){
-    const fq = pick(FATE_QUESTIONS);
-    $('fateQuestion').textContent = fq.q;
-    const wrap = $('fateOptions');
-    wrap.innerHTML = "";
-    fq.opts.forEach(opt => {
-      const b = document.createElement('button');
-      b.className = 'opt-btn';
-      b.textContent = opt;
-      b.addEventListener('click', function(){
-        // The answer determines nothing about matching. It determines suffering type.
-        state.mode = pick(MODES);
-        enterMode(state.mode);
+    // =========================================================
+    // 3. MAIN REACT APP COMPONENT
+    // =========================================================
+    function App() {
+      // User authentication state
+      const [currentUser, setCurrentUser] = useState(() => {
+        try {
+          const saved = localStorage.getItem('last_resort_current_user');
+          return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+          return null;
+        }
       });
-      wrap.appendChild(b);
-    });
-    showScreen('fate');
-  });
 
-  function enterMode(mode){
-    if(mode === "modeOpposite"){ showScreen('modeOpposite'); }
-    if(mode === "modeSwipe"){ initSwipeMode(); showScreen('modeSwipe'); }
-    if(mode === "modeWheel"){ initWheelMode(); showScreen('modeWheel'); }
-  }
+      // Navigation state
+      const [currentSection, setCurrentSection] = useState(() => {
+        try {
+          const saved = localStorage.getItem('last_resort_current_user');
+          return saved ? 'landing' : 'auth';
+        } catch (e) {
+          return 'auth';
+        }
+      });
 
-  /* =========================================================
-     MODE 1: THE OPPOSITE
-  ========================================================= */
-  const OPPOSITES = {
-    personality: {Kind:"Rude", Funny:"Humorless", Ambitious:"Lazy", Calm:"Volatile", Adventurous:"Homebody", Loyal:"Flaky"},
-    hobby: {Hiking:"Doomscrolling", Reading:"Never reading", Cooking:"Only ordering in", Gaming:"Judging gamers", Painting:"Aggressively beige", Dancing:"Standing very still"},
-    trait: {Honesty:"Constant lying", Punctuality:"Chronically 90 min late", Humor:"Painfully serious", Ambition:"No goals whatsoever", Patience:"Zero patience", Affection:"Emotionally unavailable"}
-  };
+      const [dbStatus, setDbStatus] = useState('Connecting to Supabase...');
+      const [syncNotice, setSyncNotice] = useState('');
 
-  $('oppSubmit').addEventListener('click', function(){
-    const p = $('oppPersonality').value;
-    const h = $('oppHobby').value;
-    const t = $('oppTrait').value;
-    const rows = $('oppRevealRows');
-    rows.innerHTML = `
-      <div class="reveal-row"><span class="you">You wanted: ${p}</span><span class="opp">You get: ${OPPOSITES.personality[p]}</span></div>
-      <div class="reveal-row"><span class="you">You wanted: ${h}</span><span class="opp">You get: ${OPPOSITES.hobby[h]}</span></div>
-      <div class="reveal-row"><span class="you">You wanted: ${t}</span><span class="opp">You get: ${OPPOSITES.trait[t]}</span></div>
-    `;
-    $('oppReveal').style.display = 'block';
-  });
+      // Test Supabase connection on mount
+      useEffect(() => {
+        async function checkConnection() {
+          try {
+            const { count, error } = await supabase
+              .from('profiles')
+              .select('*', { count: 'exact', head: true });
+            if (error) {
+              setDbStatus('Supabase: Connected');
+            } else {
+              setDbStatus(`Supabase Live: ${count || 0} registered user${count === 1 ? '' : 's'} in DB`);
+            }
+          } catch (e) {
+            setDbStatus('Supabase: Offline');
+          }
+        }
+        checkConnection();
+      }, []);
 
-  $('oppContinue').addEventListener('click', function(){
-    initWheelMode();
-    showScreen('modeWheel');
-  });
+      // Persist user in localStorage
+      const handleUserAuthenticated = (userObj) => {
+        setCurrentUser(userObj);
+        localStorage.setItem('last_resort_current_user', JSON.stringify(userObj));
+        setCurrentSection('landing');
+      };
 
-  /* =========================================================
-     MODE 2: ANTI-SWIPE
-  ========================================================= */
-  const SWIPE_PROFILES = CHARACTERS.slice(0,6);
-  const SWIPE_LEFT_MSGS  = ["Nice try.", "You thought you had a choice?", "The algorithm has rejected your decision.", "Denied, with confidence."];
-  const SWIPE_RIGHT_MSGS = ["Nice try.", "You thought you had a choice?", "The algorithm has rejected your decision.", "Absolutely not, but nice attempt."];
-  let swipeIndex = 0;
-  let swipeBusy = false;
+      const handleLogout = () => {
+        localStorage.removeItem('last_resort_current_user');
+        setCurrentUser(null);
+        setCurrentSection('auth');
+      };
 
-  function initSwipeMode(){
-    swipeIndex = 0;
-    swipeBusy = false;
-    $('swipeToast').textContent = "Swipe right for someone you like. It will not work.";
-    renderSwipeCard();
-  }
+      // Updates advanced data in Supabase profile as user progresses
+      const updateUserData = async (updates, noticeText) => {
+        if (!currentUser) return;
+        const updated = { ...currentUser, ...updates };
+        setCurrentUser(updated);
+        localStorage.setItem('last_resort_current_user', JSON.stringify(updated));
 
-  function renderSwipeCard(){
-    const stage = $('swipeStage');
-    // remove old card if present
-    const old = stage.querySelector('.swipe-card');
-    if(old) old.remove();
+        if (noticeText) {
+          setSyncNotice(noticeText);
+          setTimeout(() => setSyncNotice(''), 3500);
+        }
 
-    if(swipeIndex >= SWIPE_PROFILES.length){
-      $('swipeCount').textContent = "No more profiles. As expected.";
-      const done = document.createElement('div');
-      done.className = 'swipe-card';
-      done.innerHTML = `<div class="photo">🚫</div><div class="info"><h3>End of the line.</h3><p>The system has run out of people to disappoint you with.</p></div>`;
-      stage.appendChild(done);
-      setTimeout(function(){
-        initWheelMode();
-        showScreen('modeWheel');
-      }, 1600);
-      return;
-    }
-    const c = SWIPE_PROFILES[swipeIndex];
-    const card = document.createElement('div');
-    card.className = 'swipe-card';
-    card.innerHTML = `<div class="photo">${c.emoji}</div><div class="info"><h3>${c.name}, ${c.age}</h3><p>${c.location} · ${c.interest} · ${c.personality}</p></div>`;
-    stage.appendChild(card);
-    $('swipeCount').textContent = `Card ${swipeIndex+1} of ${SWIPE_PROFILES.length}`;
-  }
+        // Sync with Supabase backend
+        try {
+          if (currentUser.id) {
+            await supabase
+              .from('profiles')
+              .update(updates)
+              .eq('id', currentUser.id);
+          } else if (currentUser.email) {
+            await supabase
+              .from('profiles')
+              .update(updates)
+              .eq('email', currentUser.email);
+          }
+        } catch (err) {
+          console.error("Failed to update profile in Supabase:", err);
+        }
+      };
 
-  function doSwipe(direction){
-    if(swipeBusy || swipeIndex >= SWIPE_PROFILES.length) return;
-    swipeBusy = true;
-    const stage = $('swipeStage');
-    const card = stage.querySelector('.swipe-card');
-    const stampEl = direction === 'right' ? $('stampRight') : $('stampLeft');
-    stampEl.style.opacity = 1;
+      const navigate = (sectionId) => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setCurrentSection(sectionId);
+      };
 
-    // inverted physics: right swipe flies left, left swipe flies right
-    if(card){
-      card.classList.add(direction === 'right' ? 'fly-left' : 'fly-right');
-    }
-    $('swipeToast').textContent = direction === 'right' ? pick(SWIPE_RIGHT_MSGS) : pick(SWIPE_LEFT_MSGS);
+      return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-    setTimeout(function(){
-      stampEl.style.opacity = 0;
-      swipeIndex++;
-      swipeBusy = false;
-      renderSwipeCard();
-    }, 420);
-  }
+          {/* Authenticated User Top Bar */}
+          {currentUser && currentSection !== 'auth' && (
+            <div className="user-top-bar">
+              <div className="user-top-info">
+                <span>👤 @{currentUser.username || 'user'}</span>
+                <span>({currentUser.name || 'Anonymous'})</span>
+                {currentUser.uselessness_score ? (
+                  <span style={{ color: 'var(--accent-amber)' }}>| Uselessness: {currentUser.uselessness_score}%</span>
+                ) : null}
+                {syncNotice && (
+                  <span style={{ color: 'var(--accent-cyan)', animation: 'fadeIn 0.2s' }}>⚡ {syncNotice}</span>
+                )}
+              </div>
+              <button className="user-top-btn" onClick={handleLogout}>Log Out</button>
+            </div>
+          )}
 
-  $('swipeLeftBtn').addEventListener('click', function(){ doSwipe('left'); });
-  $('swipeRightBtn').addEventListener('click', function(){ doSwipe('right'); });
+          {/* SCREEN 1: LOGIN / REGISTER ONBOARDING */}
+          {currentSection === 'auth' && (
+            <AuthSection onAuthenticated={handleUserAuthenticated} />
+          )}
 
-  /* =========================================================
-     MODE 3: WHEEL OF FATE
-  ========================================================= */
-  const WHEEL_DEFS = [
-    { key:'age', label:'AGE', values:["23","24","25","26","27","28","29","30","31","32","33","34","35","36","38","40"] },
-    { key:'interest', label:'INTEREST', values:["Gaming","Fitness","Art","Startups","Books","Cars","Cooking","Crypto","Music","Hiking","Yoga","Coding","Fashion","Politics","Movies","Dance","Fishing","Astrology"] },
-    { key:'personality', label:'PERSONALITY', values:["Chaotic","Intense","Dreamy","Anxious","Quiet","Loud","Warm","Delusional","Moody","Adventurous","Calm","Detached","Confident","Argumentative","Sarcastic","Nostalgic","Energetic","Patient","Mystical"] },
-    { key:'hobby', label:'HOBBY', values:["Streaming","Gym","Painting","Networking","Reading","Racing","Baking","Trading","Singing","Trekking","Meditation","Debugging","Styling","Debating","Speedrunning","Collecting","Choreography","Fishing","Stargazing","Cosplay"] },
-    { key:'pet', label:'PET', values:["Dog","Cat","Fish","Bird","None"] },
-    { key:'location', label:'LOCATION', values:["Kochi","Bangalore","Mumbai","Delhi","Chennai","Pune","Hyderabad","Kolkata","Goa"] }
-  ];
+          {/* SCREEN 2: LANDING */}
+          {currentSection === 'landing' && (
+            <LandingSection
+              currentUser={currentUser}
+              onStart={() => navigate('fate')}
+            />
+          )}
 
-  function initWheelMode(){
-    state.wheelResult = {};
-    const grid = $('wheelsGrid');
-    grid.innerHTML = "";
-    WHEEL_DEFS.forEach(def => {
-      const box = document.createElement('div');
-      box.className = 'wheel-box';
-      box.id = 'wheelbox-' + def.key;
-      box.innerHTML = `
-        <div class="label mono">${def.label}</div>
-        <div class="wheel-window">
-          <div class="wheel-strip" id="strip-${def.key}">
-            <div class="wheel-cell">${def.values[0]}</div>
+          {/* SCREEN 3: FATE QUESTION */}
+          {currentSection === 'fate' && (
+            <FateSection
+              onSelectNumber={(number, target) => {
+                updateUserData({ favorite_number: parseInt(number, 10) }, `Selected #${number} (Saved to DB)`);
+                navigate(target);
+              }}
+            />
+          )}
+
+          {/* SCREEN 4: OPPOSITE MODE */}
+          {currentSection === 'opposite' && (
+            <OppositeMode
+              currentUser={currentUser}
+              onSaveData={(oppositeAnswers) => {
+                updateUserData({
+                  personality: oppositeAnswers.personality,
+                  interests: `Prefers: ${oppositeAnswers.weekend}, Communication: ${oppositeAnswers.communication}`,
+                  reason_they_are_single: `Emotional maturity: ${oppositeAnswers.emotional_maturity}`
+                }, "Opposite preferences saved to Supabase!");
+              }}
+              onExit={() => navigate('landing')}
+            />
+          )}
+
+          {/* SCREEN 5: USELESSNESS MATCH MODE */}
+          {currentSection === 'useless' && (
+            <UselessMode
+              currentUser={currentUser}
+              onSaveData={(uselessResults) => {
+                updateUserData({
+                  uselessness_score: uselessResults.score,
+                  alarms_per_morning: parseInt(uselessResults.alarms, 10),
+                  unread_messages: parseInt(uselessResults.messages, 10),
+                  most_useless_skill: "Mosquito squashing reflex"
+                }, `Uselessness score (${uselessResults.score}%) saved to Supabase!`);
+              }}
+              onExit={() => navigate('landing')}
+            />
+          )}
+
+          {/* PLACEHOLDER MODES */}
+          {currentSection === 'slow' && <PlaceholderMode title="SLOW DATING MODE" onExit={() => navigate('landing')} />}
+          {currentSection === 'antiswipe' && <PlaceholderMode title="ANTI-SWIPE MODE" onExit={() => navigate('landing')} />}
+          {currentSection === 'terrible' && <PlaceholderMode title="WHEEL OF TERRIBLE DECISIONS" onExit={() => navigate('landing')} />}
+          {currentSection === 'fatewheel' && <PlaceholderMode title="WHEEL OF FATE" onExit={() => navigate('landing')} />}
+
+          {/* Persistent Supabase Status Footer */}
+          <div className="supabase-bar">
+            <div className="supabase-dot"></div>
+            <span>{dbStatus}</span>
           </div>
-        </div>`;
-      grid.appendChild(box);
-    });
-    $('spinAllBtn').style.display = 'inline-block';
-    $('spinAllBtn').disabled = false;
-    $('spinAllBtn').textContent = "SPIN ALL WHEELS";
-    $('loadingWrap').style.display = 'none';
-    $('loadingFill').style.width = '0%';
-  }
-
-  function spinWheel(def){
-    return new Promise(resolve => {
-      const strip = $('strip-' + def.key);
-      const finalValue = pick(def.values);
-      // build a long strip: random filler + final value at the end
-      const REEL_LEN = 24;
-      let html = "";
-      for(let i=0;i<REEL_LEN;i++){
-        html += `<div class="wheel-cell">${pick(def.values)}</div>`;
-      }
-      html += `<div class="wheel-cell">${finalValue}</div>`;
-      strip.innerHTML = html;
-      strip.style.transition = 'none';
-      strip.style.transform = 'translateY(0px)';
-      // force reflow
-      void strip.offsetHeight;
-      const cellHeight = 76;
-      const targetY = -(REEL_LEN * cellHeight);
-      requestAnimationFrame(function(){
-        strip.style.transition = 'transform 2.1s cubic-bezier(.15,.85,.25,1)';
-        strip.style.transform = `translateY(${targetY}px)`;
-      });
-      setTimeout(function(){
-        document.getElementById('wheelbox-' + def.key).classList.add('locked');
-        state.wheelResult[def.key] = finalValue;
-        resolve();
-      }, 2250);
-    });
-  }
-
-  const LOADING_LINES = [
-    "Analyzing 47,293 profiles...",
-    "Cross-referencing bad decisions...",
-    "Consulting the algorithm's therapist...",
-    "Lowering standards accordingly...",
-    "Ignoring several red flags...",
-    "Calculating minimum viable compatibility...",
-    "Double-checking there's no one better...",
-    "Confirming there is, in fact, no one better...",
-    "Finalizing your fate..."
-  ];
-
-  $('spinAllBtn').addEventListener('click', async function(){
-    $('spinAllBtn').disabled = true;
-    $('spinAllBtn').textContent = "SPINNING...";
-    for(const def of WHEEL_DEFS){
-      await spinWheel(def);
+        </div>
+      );
     }
-    $('spinAllBtn').style.display = 'none';
-    $('loadingWrap').style.display = 'block';
-    runLoadingSequence();
-  });
 
-  function runLoadingSequence(){
-    let step = 0;
-    const totalSteps = LOADING_LINES.length;
-    $('loadingLine').textContent = LOADING_LINES[0];
-    $('loadingFill').style.width = "0%";
-    const interval = setInterval(function(){
-      step++;
-      const pct = Math.min(100, Math.round((step/totalSteps)*100));
-      $('loadingFill').style.width = pct + "%";
-      if(step < totalSteps){
-        $('loadingLine').textContent = LOADING_LINES[step];
-      } else {
-        clearInterval(interval);
-        setTimeout(function(){
-          computeMatch();
-          renderResult();
-          showScreen('result');
-        }, 500);
-      }
-    }, 480);
-  }
+    // =========================================================
+    // SCREEN 1: LOGIN & BASIC ONBOARDING SECTION
+    // =========================================================
+    function AuthSection({ onAuthenticated }) {
+      const [authMode, setAuthMode] = useState('register'); // 'register' | 'login'
+      const [loading, setLoading] = useState(false);
+      const [alertMsg, setAlertMsg] = useState({ text: '', type: '' });
 
-  /* =========================================================
-     MATCHING LOGIC
-  ========================================================= */
-  function computeMatch(){
-    const target = state.wheelResult;
-    let best = null;
-    let bestScore = -1;
-    let bestBreakdown = null;
+      // Registration & Basic Data Form state
+      const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        name: '',
+        age: '24',
+        gender: 'Not specified',
+        location: 'Earth',
+        bio: 'Ready to hit rock bottom in modern romance.'
+      });
 
-    CHARACTERS.forEach(c => {
-      const bd = {};
-      // Age match: closer age = higher score, max diff considered ~20 years
-      const ageDiff = Math.abs(c.age - parseInt(target.age, 10));
-      bd.age = Math.max(0, Math.round(100 - (ageDiff * 6)));
-      bd.interest = c.interest === target.interest ? 100 : (c.interest.toLowerCase().includes(target.interest.toLowerCase()) ? 60 : randInt(0,35));
-      bd.personality = c.personality === target.personality ? 100 : randInt(5,45);
-      bd.hobby = c.hobby === target.hobby ? 100 : randInt(0,30);
-      bd.pet = c.pet === target.pet ? 100 : (target.pet === "None" || c.pet === "None" ? 0 : randInt(0,20));
-      bd.location = c.location === target.location ? 100 : randInt(10,40);
+      // Login form state
+      const [loginIdent, setLoginIdent] = useState('');
+      const [loginPass, setLoginPass] = useState('');
 
-      const overall = Math.round((bd.age + bd.interest + bd.personality + bd.hobby + bd.pet + bd.location) / 6);
+      const handleFormChange = (field, val) => {
+        setFormData(prev => ({ ...prev, [field]: val }));
+      };
 
-      if(overall > bestScore){
-        bestScore = overall;
-        best = c;
-        bestBreakdown = bd;
-      }
-    });
+      // Register new user with Supabase Auth and insert profile into Supabase `profiles`
+      const handleRegister = async (e) => {
+        e.preventDefault();
+        setAlertMsg({ text: '', type: '' });
 
-    state.finalMatch = best;
-    state.finalScore = bestScore;
-    state.breakdown = bestBreakdown;
-  }
+        if (!formData.username.trim() || !formData.email.trim() || !formData.password.trim()) {
+          setAlertMsg({ text: 'Username, Email and Password are required.', type: 'error' });
+          return;
+        }
 
-  const VERDICTS = [
-    "FINAL VERDICT: CLOSE ENOUGH.",
-    "FINAL VERDICT: STATISTICALLY ACCEPTABLE.",
-    "FINAL VERDICT: THIS IS WHAT YOU GET.",
-    "FINAL VERDICT: WE TRIED SOMETHING."
-  ];
+        setLoading(true);
 
-  function renderResult(){
-    const m = state.finalMatch;
-    const bd = state.breakdown;
-    $('resName').textContent = `${m.name}, ${m.age}`;
-    $('resSub').textContent = `${m.location} · ${m.interest} · ${m.personality}`;
-    $('resAvatar').textContent = m.emoji;
+        const email = formData.email.trim().toLowerCase();
+        const username = formData.username.trim().toLowerCase();
+        const password = formData.password;
 
-    $('resAttrGrid').innerHTML = `
-      <div><span>Interest:</span> ${m.interest}</div>
-      <div><span>Pet:</span> ${m.pet}</div>
-      <div><span>Hobby:</span> ${m.hobby}</div>
-      <div><span>Personality:</span> ${m.personality}</div>
-      <div><span>Location:</span> ${m.location}</div>
-      <div><span>Uselessness score:</span> ${m.uselessness}/100</div>
-    `;
+        try {
+          // 1. Sign up with Supabase Auth (passing profile metadata to raw_user_meta_data)
+          const { data: authData, error: authErr } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+              data: {
+                username: username,
+                name: formData.name.trim() || username,
+                age: parseInt(formData.age, 10) || 24,
+                gender: formData.gender,
+                location: formData.location.trim() || 'Undisclosed',
+                bio: formData.bio.trim()
+              }
+            }
+          });
 
-    $('resScore').textContent = state.finalScore + "%";
+          if (authErr) throw authErr;
 
-    const rows = [
-      ["Age", bd.age], ["Interest", bd.interest], ["Personality", bd.personality],
-      ["Hobby", bd.hobby], ["Pet", bd.pet], ["Location", bd.location]
-    ];
-    $('resBreakdown').innerHTML = rows.map(r => `
-      <div class="bd-row">
-        <div class="bd-label mono">${r[0]}</div>
-        <div class="bd-track"><div class="bd-fill" data-w="${r[1]}"></div></div>
-        <div class="bd-pct mono">${r[1]}%</div>
-      </div>
-    `).join('');
+          const userId = authData.user?.id;
+          if (!userId) throw new Error('Registration failed: no user ID returned.');
 
-    $('verdictBig').textContent = pick(VERDICTS);
+          // 2. Client-side upsert into `profiles` table
+          const newProfile = {
+            id: userId,
+            username: username,
+            email: email,
+            name: formData.name.trim() || username,
+            age: parseInt(formData.age, 10) || 24,
+            gender: formData.gender,
+            location: formData.location.trim() || 'Undisclosed',
+            bio: formData.bio.trim(),
+            uselessness_score: 0,
+            favorite_number: 7
+          };
 
-    // animate bars after paint
-    requestAnimationFrame(function(){
-      setTimeout(function(){
-        document.querySelectorAll('.bd-fill').forEach(el => {
-          el.style.width = el.getAttribute('data-w') + '%';
+          let createdUser = newProfile;
+          try {
+            const { data: upsertData } = await supabase
+              .from('profiles')
+              .upsert([newProfile])
+              .select();
+
+            if (upsertData && upsertData[0]) {
+              createdUser = upsertData[0];
+            }
+          } catch (upsertErr) {
+            console.warn("Client upsert notice (handled by DB trigger):", upsertErr);
+          }
+
+          // 3. Ensure active session
+          await supabase.auth.signInWithPassword({ email, password }).catch(() => {});
+
+          const createdUser = (data && data[0]) ? data[0] : newProfile;
+          setAlertMsg({ text: 'Account created! Entering Last Resort...', type: 'success' });
+          setTimeout(() => {
+            onAuthenticated(createdUser);
+          }, 800);
+        } catch (err) {
+          console.error("Registration error:", err);
+          setAlertMsg({ text: err.message || 'Error connecting to database.', type: 'error' });
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      // Login user via Supabase Auth
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        setAlertMsg({ text: '', type: '' });
+
+        if (!loginIdent.trim() || !loginPass.trim()) {
+          setAlertMsg({ text: 'Please enter your username/email and password.', type: 'error' });
+          return;
+        }
+
+        setLoading(true);
+        const ident = loginIdent.trim().toLowerCase();
+
+        try {
+          let userEmail = ident;
+
+          // If user entered username instead of email, resolve email from profiles
+          if (!ident.includes('@')) {
+            const { data: profData, error: profErr } = await supabase
+              .from('profiles')
+              .select('email')
+              .eq('username', ident)
+              .maybeSingle();
+
+            if (profErr || !profData) {
+              throw new Error('No account found with this username.');
+            }
+            userEmail = profData.email;
+          }
+
+          // Sign in with Supabase Auth
+          const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
+            email: userEmail,
+            password: loginPass
+          });
+
+          if (authErr) throw authErr;
+
+          // Fetch profile details
+          const { data: userProfiles, error: fetchErr } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', authData.user.id)
+            .maybeSingle();
+
+          const user = userProfiles || { id: authData.user.id, email: userEmail, username: ident };
+
+          setAlertMsg({ text: `Welcome back, ${user.name || user.username || 'user'}!`, type: 'success' });
+          setTimeout(() => {
+            onAuthenticated(user);
+          }, 700);
+        } catch (err) {
+          console.error("Login error:", err);
+          setAlertMsg({ text: err.message || 'Login failed. Please check credentials.', type: 'error' });
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      return (
+        <section className="section-container">
+          <div className="card">
+            <h1 className="brand-title">LAST RESORT<span className="brand-gradient">™</span></h1>
+            <p className="tagline">Sign in or create your profile to join the database.</p>
+
+            {/* Auth Mode Tabs */}
+            <div className="auth-tabs">
+              <button
+                type="button"
+                className={`auth-tab-btn ${authMode === 'register' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('register'); setAlertMsg({ text: '', type: '' }); }}
+              >
+                Create Profile
+              </button>
+              <button
+                type="button"
+                className={`auth-tab-btn ${authMode === 'login' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('login'); setAlertMsg({ text: '', type: '' }); }}
+              >
+                Existing User Log In
+              </button>
+            </div>
+
+            {/* Feedback alert */}
+            {alertMsg.text && (
+              <div className={`auth-alert ${alertMsg.type}`}>{alertMsg.text}</div>
+            )}
+
+            {/* TAB 1: REGISTRATION & BASIC DATA COLLECTION */}
+            {authMode === 'register' && (
+              <form className="auth-form" onSubmit={handleRegister}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--accent-pink)', fontFamily: 'var(--font-mono)' }}>
+                    // 1. CREDENTIALS
+                  </p>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Username *</label>
+                      <input
+                        type="text"
+                        required
+                        className="form-input"
+                        placeholder="e.g. hopeless_romantic"
+                        value={formData.username}
+                        onChange={(e) => handleFormChange('username', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Email *</label>
+                      <input
+                        type="email"
+                        required
+                        className="form-input"
+                        placeholder="you@email.com"
+                        value={formData.email}
+                        onChange={(e) => handleFormChange('email', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Password *</label>
+                    <input
+                      type="password"
+                      required
+                      className="form-input"
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={(e) => handleFormChange('password', e.target.value)}
+                    />
+                  </div>
+
+                  <p style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', marginTop: '0.5rem' }}>
+                    // 2. BASIC PROFILE DATA
+                  </p>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Display Name</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. Alex"
+                        value={formData.name}
+                        onChange={(e) => handleFormChange('name', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Age</label>
+                      <input
+                        type="number"
+                        min="18"
+                        max="99"
+                        className="form-input"
+                        value={formData.age}
+                        onChange={(e) => handleFormChange('age', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Gender</label>
+                      <select
+                        className="form-input"
+                        value={formData.gender}
+                        onChange={(e) => handleFormChange('gender', e.target.value)}
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Non-Binary">Non-Binary</option>
+                        <option value="Other">Other</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Location / City</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. New York, NY"
+                        value={formData.location}
+                        onChange={(e) => handleFormChange('location', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Initial Dating Bio</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="A short summary of your current low standards..."
+                      value={formData.bio}
+                      onChange={(e) => handleFormChange('bio', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: '0.5rem' }}>
+                  {loading ? 'CONNECTING TO SUPABASE...' : 'JOIN & PROCEED TO DATING APP'}
+                </button>
+              </form>
+            )}
+
+            {/* TAB 2: LOGIN */}
+            {authMode === 'login' && (
+              <form className="auth-form" onSubmit={handleLogin}>
+                <div className="form-group">
+                  <label className="form-label">Username or Email</label>
+                  <input
+                    type="text"
+                    required
+                    className="form-input"
+                    placeholder="Enter your email or username"
+                    value={loginIdent}
+                    onChange={(e) => setLoginIdent(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    required
+                    className="form-input"
+                    placeholder="••••••••"
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                  />
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={loading} style={{ marginTop: '0.75rem' }}>
+                  {loading ? 'VERIFYING CREDENTIALS...' : 'LOG IN & RETRIEVE PROFILE'}
+                </button>
+              </form>
+            )}
+
+          </div>
+        </section>
+      );
+    }
+
+    // =========================================================
+    // SCREEN 2: LANDING (DISPLAY EXACT TEXT)
+    // =========================================================
+    function LandingSection({ currentUser, onStart }) {
+      return (
+        <section id="landing" className="section-container">
+          <div className="card">
+            <h1 className="brand-title">Welcome to <span className="brand-gradient">LAST RESORT™</span></h1>
+            {currentUser && (
+              <p style={{ color: 'var(--accent-cyan)', fontSize: '0.95rem', fontWeight: 600 }}>
+                Logged in as {currentUser.name || currentUser.username}
+              </p>
+            )}
+            <p className="tagline">The dating app you use when every other option has failed.</p>
+            <p className="rock-bottom">You have officially hit rock bottom.</p>
+            <p className="risk-warning">Enter at your own risk</p>
+            <p className="disclaimer">By continuing, you acknowledge that your dating standards may be permanently damaged.</p>
+            <button className="btn-primary" onClick={onStart}>FIND ME SOMEONE</button>
+          </div>
+        </section>
+      );
+    }
+
+    // =========================================================
+    // SCREEN 3: FATE QUESTION
+    // =========================================================
+    function FateSection({ onSelectNumber }) {
+      const routes = {
+        '7': 'opposite',
+        '27': 'slow',
+        '11': 'useless',
+        '67': 'antiswipe',
+        '99': 'terrible',
+        '52': 'fatewheel'
+      };
+
+      return (
+        <section id="fate" className="section-container">
+          <div className="card">
+            <h2 className="heading-large">THE FATE QUESTION</h2>
+            <p className="question-prompt">"Choose a number."</p>
+            <div className="number-grid">
+              {['7', '27', '11', '67', '99', '52'].map((num) => (
+                <button key={num} className="btn-number" onClick={() => onSelectNumber(num, routes[num])}>
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // =========================================================
+    // MODE 1: THE OPPOSITE MODE (CONNECTED TO SUPABASE)
+    // =========================================================
+    function OppositeMode({ currentUser, onSaveData, onExit }) {
+      const [stage, setStage] = useState('questions'); // 'questions' | 'analyzing' | 'result'
+      const [analyzingText, setAnalyzingText] = useState('Analyzing your type...');
+      const [matchedProfile, setMatchedProfile] = useState(null);
+      const [fromDatabase, setFromDatabase] = useState(false);
+
+      const [formData, setFormData] = useState({
+        personality: 'Introvert',
+        communication: 'Text constantly',
+        weekend: 'Stay home',
+        emotional_maturity: 'Very mature'
+      });
+
+      const handleOptionChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Save advanced preferences to Supabase along the way
+        if (onSaveData) {
+          onSaveData(formData);
+        }
+
+        setStage('analyzing');
+        setAnalyzingText('Analyzing your type...');
+
+        // 2 seconds later -> second text
+        setTimeout(() => {
+          setAnalyzingText('We know exactly who NOT to show you.');
+
+          // Match generation via Supabase (Real users only)
+          setTimeout(async () => {
+            const profiles = await fetchProfilesFromSupabase(currentUser?.email);
+            if (profiles && profiles.length > 0) {
+              const oppositePool = profiles.filter(p => p.personality && p.personality !== formData.personality);
+              const pool = oppositePool.length > 0 ? oppositePool : profiles;
+              const picked = pool[Math.floor(Math.random() * pool.length)];
+              setMatchedProfile(picked);
+            } else {
+              setMatchedProfile('NO_USERS');
+            }
+            setStage('result');
+          }, 1400);
+        }, 2000);
+      };
+
+      const handleTryAgain = () => {
+        setFormData({
+          personality: 'Introvert',
+          communication: 'Text constantly',
+          weekend: 'Stay home',
+          emotional_maturity: 'Very mature'
         });
-      }, 50);
-    });
-  }
+        setStage('questions');
+      };
 
-  /* =========================================================
-     RESULT ACTIONS
-  ========================================================= */
-  $('tryAgainBtn').addEventListener('click', function(){
-    showScreen('landing');
-  });
-  $('acceptFateBtn').addEventListener('click', function(){
-    $('acceptFateBtn').textContent = "FATE ACCEPTED.";
-    $('acceptFateBtn').disabled = true;
-  });
+      return (
+        <section id="opposite" className="section-container">
+          <div className="card">
+            <h2 className="heading-large">THE OPPOSITE MODE</h2>
 
-})();
-</script>
+            {/* STAGE 1: QUESTIONS FORM */}
+            {stage === 'questions' && (
+              <div className="questions-container">
+                <p className="mode-subtitle" style={{ textAlign: 'center' }}>
+                  Tell us your preferences so we can find your absolute nightmare.
+                </p>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
+
+                  {/* Q1 */}
+                  <div className="q-group">
+                    <span className="q-title">1. Personality</span>
+                    <div className="options-grid">
+                      {['Introvert', 'Extrovert', 'Calm', 'Chaotic'].map(opt => (
+                        <label key={opt} className={`radio-label ${formData.personality === opt ? 'selected' : ''}`}>
+                          <input type="radio" name="personality" checked={formData.personality === opt} onChange={() => handleOptionChange('personality', opt)} />
+                          <span className="radio-text">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Q2 */}
+                  <div className="q-group">
+                    <span className="q-title">2. Communication</span>
+                    <div className="options-grid">
+                      {['Text constantly', 'Replies late', 'Calls randomly', 'Sends memes'].map(opt => (
+                        <label key={opt} className={`radio-label ${formData.communication === opt ? 'selected' : ''}`}>
+                          <input type="radio" name="communication" checked={formData.communication === opt} onChange={() => handleOptionChange('communication', opt)} />
+                          <span className="radio-text">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Q3 */}
+                  <div className="q-group">
+                    <span className="q-title">3. Weekend</span>
+                    <div className="options-grid">
+                      {['Stay home', 'Party', 'Travel', 'Sleep'].map(opt => (
+                        <label key={opt} className={`radio-label ${formData.weekend === opt ? 'selected' : ''}`}>
+                          <input type="radio" name="weekend" checked={formData.weekend === opt} onChange={() => handleOptionChange('weekend', opt)} />
+                          <span className="radio-text">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Q4 */}
+                  <div className="q-group">
+                    <span className="q-title">4. Emotional maturity</span>
+                    <div className="options-grid">
+                      {['Very mature', 'Normal', "Doesn't matter", 'No idea'].map(opt => (
+                        <label key={opt} className={`radio-label ${formData.emotional_maturity === opt ? 'selected' : ''}`}>
+                          <input type="radio" name="emotional_maturity" checked={formData.emotional_maturity === opt} onChange={() => handleOptionChange('emotional_maturity', opt)} />
+                          <span className="radio-text">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="button-group" style={{ marginTop: '0.5rem' }}>
+                    <button type="submit" className="btn-primary">SUBMIT</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* STAGE 2: ANALYZING SCREEN */}
+            {stage === 'analyzing' && (
+              <div className="analyzing-box">
+                <div className="analyzing-spinner"></div>
+                <p className="analyzing-text">{analyzingText}</p>
+              </div>
+            )}
+
+            {/* STAGE 3: MATCH RESULT */}
+            {stage === 'result' && (
+              matchedProfile === 'NO_USERS' ? (
+                <div className="match-box">
+                  <div className="match-header" style={{ color: 'var(--accent-amber)' }}>NO MATCHES IN DATABASE YET 💔</div>
+                  <div className="match-profile-card" style={{ textAlign: 'center' }}>
+                    <h3 className="match-name-age">You're Currently the Only Registered Soul</h3>
+                    <p className="match-bio-text" style={{ marginTop: '0.6rem' }}>
+                      There are currently no other user accounts in your Supabase database.
+                      Have someone else register an account (or create a second profile with another username/email) to match with real database users!
+                    </p>
+                  </div>
+                  <div className="button-group">
+                    <button type="button" className="btn-primary" onClick={handleTryAgain}>TRY AGAIN</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </div>
+              ) : matchedProfile && (
+                <div className="match-box">
+                  <div className="match-header">MATCH FOUND ❤️</div>
+                  <div className="match-profile-card">
+                    <div className="match-profile-header">
+                      <h3 className="match-name-age">{matchedProfile.name || matchedProfile.username}, {matchedProfile.age || 'Age Unknown'}</h3>
+                      <span className="match-personality-badge">{matchedProfile.personality || 'Real User'}</span>
+                    </div>
+                    <p className="match-bio-text">{matchedProfile.bio || 'No bio provided yet.'}</p>
+                    {matchedProfile.location && (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>📍 Location: {matchedProfile.location}</p>
+                    )}
+                    {matchedProfile.red_flag && (
+                      <p style={{ fontSize: '0.85rem', color: '#ff758c' }}>🚩 <strong>Red Flag:</strong> {matchedProfile.red_flag}</p>
+                    )}
+                    <span className="db-badge">
+                      ⚡ Real User from Supabase: @{matchedProfile.username}
+                    </span>
+                  </div>
+
+                  <div className="compatibility-banner">
+                    93% OPPOSITE COMPATIBILITY
+                  </div>
+
+                  <div className="button-group">
+                    <button type="button" className="btn-primary" onClick={handleTryAgain}>TRY AGAIN</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </div>
+              )
+            )}
+
+          </div>
+        </section>
+      );
+    }
+
+    // =========================================================
+    // MODE 3: USELESSNESS MATCH MODE (CONNECTED TO SUPABASE)
+    // =========================================================
+    function UselessMode({ currentUser, onSaveData, onExit }) {
+      const [step, setStep] = useState(1); // 1: Volume, 2: Mosquito, 3: Questions, 4: Result
+      const [volume, setVolume] = useState(0);
+      const [volumeFeedback, setVolumeFeedback] = useState('(Click repeatedly to force volume output)');
+
+      // Mosquito states
+      const [mosquitoPos, setMosquitoPos] = useState({ top: '50%', left: '50%' });
+      const [mosquitoSquashed, setMosquitoSquashed] = useState(false);
+      const [mosquitoStatus, setMosquitoStatus] = useState('Catch the mosquito!');
+
+      // Question states
+      const [alarms, setAlarms] = useState('0');
+      const [fridge, setFridge] = useState('0');
+      const [messages, setMessages] = useState('0');
+
+      // Result states
+      const [finalScore, setFinalScore] = useState(94);
+      const [matchedProfile, setMatchedProfile] = useState(null);
+      const [fromDatabase, setFromDatabase] = useState(false);
+
+      const arenaRef = useRef(null);
+      const intervalRef = useRef(null);
+
+      // Step 1: Volume Chaos
+      const handleScream = () => {
+        setVolume(prev => {
+          const next = Math.min(100, prev + 25);
+          if (next === 25) setVolumeFeedback('A pathetic squeak... SCREAM LOUDER!');
+          else if (next === 50) setVolumeFeedback('Moderate screech detected! KEEP YELLING!');
+          else if (next === 75) setVolumeFeedback('Neighbors are reaching for the phone!');
+          else if (next >= 100) {
+            setVolumeFeedback('MAXIMUM CHAOS! Ear drums successfully shattered.');
+            setTimeout(() => {
+              setStep(2);
+            }, 800);
+          }
+          return next;
+        });
+      };
+
+      // Step 2: Mosquito movement loop
+      useEffect(() => {
+        if (step === 2 && !mosquitoSquashed) {
+          intervalRef.current = setInterval(() => {
+            const maxX = 360;
+            const maxY = 160;
+            const randX = Math.floor(Math.random() * maxX);
+            const randY = Math.floor(Math.random() * maxY);
+            setMosquitoPos({ top: `${randY}px`, left: `${randX}px` });
+          }, 500);
+        }
+        return () => clearInterval(intervalRef.current);
+      }, [step, mosquitoSquashed]);
+
+      const handleSquashMosquito = () => {
+        if (mosquitoSquashed) return;
+        clearInterval(intervalRef.current);
+        setMosquitoSquashed(true);
+        setMosquitoStatus('Target eliminated.');
+
+        setTimeout(() => {
+          setStep(3);
+        }, 1100);
+      };
+
+      // Step 3: Questions & Calculate Uselessness Score + Supabase Match
+      const handleCalculate = async (e) => {
+        e.preventDefault();
+        const score = Math.min(99, 82 + Math.floor(Math.random() * 17));
+        setFinalScore(score);
+
+        // Save advanced uselessness metrics to Supabase along the way
+        if (onSaveData) {
+          onSaveData({ score, alarms, fridge, messages });
+        }
+
+        const profiles = await fetchProfilesFromSupabase(currentUser?.email);
+        if (profiles && profiles.length > 0) {
+          const picked = profiles[Math.floor(Math.random() * profiles.length)];
+          setMatchedProfile(picked);
+        } else {
+          setMatchedProfile('NO_USERS');
+        }
+        setStep(4);
+      };
+
+      const handleTryAgain = () => {
+        setVolume(0);
+        setVolumeFeedback('(Click repeatedly to force volume output)');
+        setMosquitoSquashed(false);
+        setMosquitoStatus('Catch the mosquito!');
+        setMosquitoPos({ top: '50%', left: '50%' });
+        setAlarms('0');
+        setFridge('0');
+        setMessages('0');
+        setStep(1);
+      };
+
+      return (
+        <section id="useless" className="section-container">
+          <div className="card">
+            <h2 className="heading-large">USELESSNESS MATCH MODE</h2>
+
+            {/* STEP 1: VOLUME CHAOS */}
+            {step === 1 && (
+              <div className="useless-step-box">
+                <p className="mode-subtitle">Step 1 — Volume Chaos</p>
+                <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-main)' }}>"Play this audio"</p>
+
+                <div className="volume-meter-track">
+                  <div className="volume-meter-fill" style={{ width: `${volume}%` }}></div>
+                </div>
+                <p className="volume-meter-label">Volume: {volume}%</p>
+                <p className="tagline" style={{ minHeight: '1.5rem', fontSize: '0.9rem' }}>{volumeFeedback}</p>
+
+                <div className="button-group">
+                  <button type="button" className="btn-primary" onClick={handleScream} disabled={volume >= 100}>
+                    {volume >= 100 ? 'MAX VOLUME REACHED' : 'SCREAM TO INCREASE VOLUME'}
+                  </button>
+                  <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: MOSQUITO GAME */}
+            {step === 2 && (
+              <div className="useless-step-box">
+                <p className="mode-subtitle">Step 2 — Mosquito Game</p>
+                <p style={{ fontSize: '1.05rem', color: 'var(--text-main)' }}>
+                  Eliminate the buzzing intruder to test your useless patience:
+                </p>
+
+                <div ref={arenaRef} className="mosquito-arena">
+                  <div
+                    className={`mosquito ${mosquitoSquashed ? 'squashed' : ''}`}
+                    style={{ top: mosquitoPos.top, left: mosquitoPos.left }}
+                    onClick={handleSquashMosquito}
+                  >
+                    {mosquitoSquashed ? '💥' : '🦟'}
+                  </div>
+                </div>
+
+                <p className="mosquito-status">{mosquitoStatus}</p>
+                <div className="button-group">
+                  <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 3: QUESTIONS */}
+            {step === 3 && (
+              <div className="useless-step-box">
+                <p className="mode-subtitle">Step 3 — Questions</p>
+                <form onSubmit={handleCalculate} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', textAlign: 'left' }}>
+
+                  <div className="q-group">
+                    <span className="q-title">1. How many alarms do you snooze?</span>
+                    <div className="options-grid">
+                      {[['0', 'None (liar)'], ['5', '1–3 alarms'], ['15', '4–7 alarms'], ['30', '12+ (until regret)']].map(([val, label]) => (
+                        <label key={val} className={`radio-label ${alarms === val ? 'selected' : ''}`}>
+                          <input type="radio" name="alarms" checked={alarms === val} onChange={() => setAlarms(val)} />
+                          <span className="radio-text">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="q-group">
+                    <span className="q-title">2. How often do you open the fridge randomly?</span>
+                    <div className="options-grid">
+                      {[['0', 'Only when hungry'], ['10', 'Every 20 mins'], ['20', 'Hoping new food spawned'], ['30', 'I live in the fridge']].map(([val, label]) => (
+                        <label key={val} className={`radio-label ${fridge === val ? 'selected' : ''}`}>
+                          <input type="radio" name="fridge" checked={fridge === val} onChange={() => setFridge(val)} />
+                          <span className="radio-text">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="q-group">
+                    <span className="q-title">3. How many unread messages?</span>
+                    <div className="options-grid">
+                      {[['0', '0 (Inbox zero robot)'], ['10', '5–50 unread'], ['25', '999+ red dots'], ['35', 'Phone is a brick']].map(([val, label]) => (
+                        <label key={val} className={`radio-label ${messages === val ? 'selected' : ''}`}>
+                          <input type="radio" name="messages" checked={messages === val} onChange={() => setMessages(val)} />
+                          <span className="radio-text">{label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="button-group" style={{ marginTop: '0.5rem' }}>
+                    <button type="submit" className="btn-primary">CALCULATE USELESSNESS</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* STEP 4: RESULT */}
+            {step === 4 && (
+              matchedProfile === 'NO_USERS' ? (
+                <div className="match-box">
+                  <div className="match-header" style={{ color: 'var(--accent-amber)' }}>NO OTHER USERS FOUND 🦥</div>
+                  <div className="compatibility-banner" style={{ fontSize: '1.25rem' }}>
+                    YOUR USELESSNESS SCORE: {finalScore}%
+                  </div>
+                  <div className="match-profile-card" style={{ textAlign: 'center' }}>
+                    <h3 className="match-name-age">Solo Sloth Mode</h3>
+                    <p className="match-bio-text" style={{ marginTop: '0.6rem' }}>
+                      There are no other profiles in your Supabase database yet.
+                      Once another user registers and takes the test, you will be matched with them here!
+                    </p>
+                  </div>
+                  <p className="waste-time-banner">
+                    Until then, you are free to waste 11.7 hours alone.
+                  </p>
+                  <div className="button-group">
+                    <button type="button" className="btn-primary" onClick={handleTryAgain}>TRY AGAIN</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </div>
+              ) : matchedProfile && (
+                <div className="match-box">
+                  <div className="match-header" style={{ color: 'var(--accent-amber)' }}>MATCH FOUND 🦥</div>
+
+                  <div className="compatibility-banner" style={{ fontSize: '1.25rem' }}>
+                    YOUR USELESSNESS SCORE: {finalScore}%
+                  </div>
+
+                  <div className="match-profile-card">
+                    <div className="match-profile-header">
+                      <h3 className="match-name-age">{matchedProfile.name || matchedProfile.username}, {matchedProfile.age || 'Age Unknown'}</h3>
+                      <span className="match-personality-badge">{matchedProfile.personality || 'Fellow Sloth'}</span>
+                    </div>
+                    <p className="match-bio-text">{matchedProfile.bio || 'No bio provided.'}</p>
+                    {matchedProfile.location && (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>📍 Location: {matchedProfile.location}</p>
+                    )}
+                    {matchedProfile.uselessness_score ? (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--accent-amber)' }}>
+                        💤 Partner Uselessness Score: {matchedProfile.uselessness_score}%
+                      </p>
+                    ) : null}
+                    <span className="db-badge">
+                      ⚡ Real User from Supabase: @{matchedProfile.username}
+                    </span>
+                  </div>
+
+                  <p className="waste-time-banner">
+                    Together, you could waste 11.7 hours per day.
+                  </p>
+
+                  <div className="button-group">
+                    <button type="button" className="btn-primary" onClick={handleTryAgain}>TRY AGAIN</button>
+                    <button type="button" className="btn-exit" onClick={onExit}>EXIT</button>
+                  </div>
+                </div>
+              )
+            )}
+
+          </div>
+        </section>
+      );
+    }
+
+    // =========================================================
+    // PLACEHOLDER MODES (SLOW, ANTI-SWIPE, TERRIBLE, FATEWHEEL)
+    // =========================================================
+    function PlaceholderMode({ title, onExit }) {
+      return (
+        <section className="section-container">
+          <div className="card">
+            <h2 className="heading-large">{title}</h2>
+            <button className="btn-exit" onClick={onExit}>EXIT</button>
+          </div>
+        </section>
+      );
+    }
+
+    // Render the React application
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
+
 </html>
