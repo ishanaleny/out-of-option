@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd dateing_web && npm install && npm run build",
+  "outputDirectory": "dateing_web/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

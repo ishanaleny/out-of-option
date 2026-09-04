@@ -185,8 +185,8 @@ For Software:
 *Complementary Vibe Match mode showcasing opposite energy candidate pairings.*
 
 # Diagrams
-![Workflow](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788477221216.png)
-*User journey from landing waiver to chaotic fate modes and sabotaged send button chat.*
+![Workflow](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788493902846.png)
+*Detailed architecture and execution workflow map for OUT OF OPTIONS - LAST RESORT™.*
 
 ### 🎭 Design Philosophy & Goal
 - **UX Storytelling over Functionality**: Intentionally breaks user expectations and mocks dating app algorithms using fake complexity for humor.

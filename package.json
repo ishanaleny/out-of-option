@@ -1,0 +1,10 @@
+{
+  "name": "out-of-option-root",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix dateing_web run dev",
+    "build": "npm --prefix dateing_web run build",
+    "preview": "npm --prefix dateing_web run preview"
+  }
+}
