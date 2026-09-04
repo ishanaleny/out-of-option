@@ -75,6 +75,9 @@ export default function AuthPage() {
         if (error.message.toLowerCase().includes('email logins are disabled') || error.message.toLowerCase().includes('provider is disabled')) {
           throw new Error('Email auth is disabled in Supabase. Enable "Email Provider" in Supabase Dashboard → Auth → Providers.')
         }
+        if (error.message.toLowerCase().includes('invalid login credentials')) {
+          throw new Error('Invalid credentials. If you recently registered, please check your email inbox to confirm your account first!')
+        }
         throw error
       }
       toast.success('Welcome back to your destiny 💕')
@@ -89,19 +92,21 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    const cleanEmail = regEmail.trim()
+    const cleanUsername = regUsername.trim()
     try {
       const { data: existing } = await supabase
         .from('profiles')
         .select('username')
-        .eq('username', regUsername.trim())
+        .eq('username', cleanUsername)
         .maybeSingle()
 
       if (existing) throw new Error('That username is taken. Be more original.')
 
       const { data, error } = await supabase.auth.signUp({
-        email: regEmail,
+        email: cleanEmail,
         password: regPassword,
-        options: { data: { username: regUsername } }
+        options: { data: { username: cleanUsername } }
       })
       if (error) throw error
 
@@ -110,8 +115,8 @@ export default function AuthPage() {
 
       await supabase.from('profiles').upsert({
         id: userId,
-        email: regEmail,
-        username: regUsername.trim(),
+        email: cleanEmail,
+        username: cleanUsername,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
@@ -129,11 +134,16 @@ export default function AuthPage() {
   async function finishRegistration(saveProfile = true) {
     setLoading(true)
     setError('')
+    const cleanEmail = regEmail.trim()
     try {
       if (saveProfile && regUserId) {
         let photoUrl = null
         if (photoFile) {
-          photoUrl = await uploadProfilePhoto(regUserId, photoFile)
+          try {
+            photoUrl = await uploadProfilePhoto(regUserId, photoFile)
+          } catch (pErr) {
+            console.warn('Profile photo upload error:', pErr)
+          }
         }
 
         await supabase.from('profiles').update({
@@ -147,26 +157,30 @@ export default function AuthPage() {
         }).eq('id', regUserId)
       }
 
+      // Check if session is already active from signUp (e.g. if email confirmation is disabled in Supabase)
+      const { data: { session: existingSession } } = await supabase.auth.getSession()
+
+      if (existingSession) {
+        toast.success("Welcome! Entering your Fate Questions... 💕")
+        return
+      }
+
+      // Attempt automatic sign-in
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: regEmail,
+        email: cleanEmail,
         password: regPassword,
       })
 
       if (signInError) {
-        if (signInError.message.toLowerCase().includes('email')) {
-          setError('')
-          toast('📧 Check your email for confirmation, then sign in.', { duration: 6000 })
-          setStep(1)
-          setView('login')
-          setEmail(regEmail)
-        } else {
-          throw signInError
-        }
+        setError('')
+        toast('📧 Profile saved! Please check your email inbox to confirm your account, then log in.', { duration: 6000, icon: '✨' })
+        setStep(1)
+        setView('login')
+        setEmail(cleanEmail)
         return
       }
 
       toast.success("Welcome! Entering your Fate Questions... 💕")
-      // AuthContext session updates → App.jsx reveals Fate Questions automatically
     } catch (err) {
       setError(err.message || 'Profile setup failed.')
     } finally {

@@ -86,7 +86,7 @@ export default function UselessMode({ navigate }) {
       } catch (_) {}
     }
 
-    // Find match by closest uselessness score
+    // Find match by selecting a random person each time
     try {
       const { data: allUsers } = await supabase
         .from('profiles')
@@ -98,13 +98,10 @@ export default function UselessMode({ navigate }) {
         return
       }
 
-      const scored = allUsers.map(u => ({
-        ...u,
-        scoreDiff: Math.abs((u.uselessness_score || 0) - score),
-      }))
-      scored.sort((a, b) => a.scoreDiff - b.scoreDiff)
+      // Select a random profile each time
+      const randomUser = allUsers[Math.floor(Math.random() * allUsers.length)]
 
-      setMatchedUser(scored[0])
+      setMatchedUser(randomUser)
       setWaste(WASTE_MESSAGES[Math.floor(Math.random() * WASTE_MESSAGES.length)])
       setPhase('result')
     } catch (err) {
