@@ -181,10 +181,6 @@ Open `http://localhost:5173` in your browser.
 ![Complementary Vibe Match Profile](./screenshots/vibe_match_profile.png)
 *Complementary Vibe Match profile deck displaying character bio cards with energy vibes and flags.*
 
-# Diagrams
-![Workflow](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788493902846.png)
-*Detailed architecture and execution workflow map for OUT OF OPTIONS - LAST RESORT™.*
-
 ### 🎭 Design Philosophy & Goal
 - **UX Storytelling over Functionality**: Intentionally breaks user expectations and mocks dating app algorithms using fake complexity for humor.
 - **Goal**: Create a fully interactive, absurd, and memorable web experience that feels like a real product — but behaves like a joke.
