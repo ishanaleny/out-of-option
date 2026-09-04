@@ -9,49 +9,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function initSession() {
-      try {
-        const { data: { session: sbSession } } = await supabase.auth.getSession()
-        if (sbSession) {
-          setSession(sbSession)
-          if (sbSession.user) await fetchProfile(sbSession.user.id)
-        } else {
-          const stored = localStorage.getItem('lastresort_custom_session')
-          if (stored) {
-            try {
-              const parsed = JSON.parse(stored)
-              if (parsed?.user?.id) {
-                setSession(parsed)
-                await fetchProfile(parsed.user.id)
-              } else {
-                setLoading(false)
-              }
-            } catch (_) {
-              setLoading(false)
-            }
-          } else {
-            setLoading(false)
-          }
-        }
-      } catch (err) {
-        console.error('Session init error:', err)
-        setLoading(false)
-      }
-    }
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      if (session?.user) fetchProfile(session.user.id)
+      else setLoading(false)
+    })
 
-    initSession()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, sbSession) => {
-      if (sbSession) {
-        setSession(sbSession)
-        if (sbSession.user) await fetchProfile(sbSession.user.id)
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session)
+      if (session?.user) {
+        await fetchProfile(session.user.id)
       } else {
-        const stored = localStorage.getItem('lastresort_custom_session')
-        if (!stored) {
-          setSession(null)
-          setProfile(null)
-          setLoading(false)
-        }
+        setProfile(null)
+        setLoading(false)
       }
     })
 
@@ -64,9 +36,9 @@ export function AuthProvider({ children }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .maybeSingle()
+        .single()
 
-      if (error) throw error
+      if (error && error.code !== 'PGRST116') throw error
       setProfile(data || null)
     } catch (err) {
       console.error('Failed to fetch profile:', err)
@@ -76,27 +48,18 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function setCustomSession(customSessionData) {
-    localStorage.setItem('lastresort_custom_session', JSON.stringify(customSessionData))
-    setSession(customSessionData)
-    if (customSessionData?.user?.id) {
-      await fetchProfile(customSessionData.user.id)
-    }
-  }
-
   async function refreshProfile() {
-    if (session?.user?.id) await fetchProfile(session.user.id)
+    if (session?.user) await fetchProfile(session.user.id)
   }
 
   async function signOut() {
-    localStorage.removeItem('lastresort_custom_session')
     await supabase.auth.signOut()
     setProfile(null)
     setSession(null)
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, refreshProfile, setCustomSession, signOut }}>
+    <AuthContext.Provider value={{ session, profile, loading, refreshProfile, signOut }}>
       {children}
     </AuthContext.Provider>
   )

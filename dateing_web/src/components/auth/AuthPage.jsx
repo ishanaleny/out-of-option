@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import { supabase, uploadProfilePhoto } from '../../lib/supabase'
-import { useAuth } from '../../context/AuthContext'
 import toast from 'react-hot-toast'
 
 const FUN_DISCLAIMERS = [
@@ -11,7 +10,6 @@ const FUN_DISCLAIMERS = [
 ]
 
 export default function AuthPage() {
-  const { setCustomSession } = useAuth()
   const [view, setView] = useState('landing') // 'landing' | 'login' | 'register'
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -57,29 +55,19 @@ export default function AuthPage() {
     setLoading(true)
     setError('')
     try {
-      let loginEmail = email.trim().toLowerCase()
-      let matchedProfile = null
+      let loginEmail = email.trim()
 
       // Allow logging in with either username or email
       if (!loginEmail.includes('@')) {
-        const { data } = await supabase
+        const { data: matchedProfile } = await supabase
           .from('profiles')
-          .select('*')
-          .eq('username', email.trim())
+          .select('email')
+          .eq('username', loginEmail)
           .maybeSingle()
 
-        matchedProfile = data
         if (matchedProfile?.email) {
           loginEmail = matchedProfile.email
         }
-      } else {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('email', loginEmail)
-          .maybeSingle()
-
-        matchedProfile = data
       }
 
       const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password })
@@ -87,16 +75,9 @@ export default function AuthPage() {
         if (error.message.toLowerCase().includes('email logins are disabled') || error.message.toLowerCase().includes('provider is disabled')) {
           throw new Error('Email auth is disabled in Supabase. Enable "Email Provider" in Supabase Dashboard → Auth → Providers.')
         }
-
-        // If rate limit or pending confirmation, fallback to database session if profile exists
-        if (matchedProfile?.id) {
-          await setCustomSession({
-            user: { id: matchedProfile.id, email: matchedProfile.email }
-          })
-          toast.success('Welcome back to your destiny 💕')
-          return
+        if (error.message.toLowerCase().includes('invalid login credentials')) {
+          throw new Error('Invalid credentials. If you recently registered, please check your email inbox to confirm your account first!')
         }
-
         throw error
       }
       toast.success('Welcome back to your destiny 💕')
@@ -111,7 +92,7 @@ export default function AuthPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const cleanEmail = regEmail.trim().toLowerCase()
+    const cleanEmail = regEmail.trim()
     const cleanUsername = regUsername.trim()
     try {
       const { data: existing } = await supabase
@@ -122,29 +103,16 @@ export default function AuthPage() {
 
       if (existing) throw new Error('That username is taken. Be more original.')
 
-      let userId = null
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password: regPassword,
+        options: { data: { username: cleanUsername } }
+      })
+      if (error) throw error
 
-      try {
-        const { data, error } = await supabase.auth.signUp({
-          email: cleanEmail,
-          password: regPassword,
-          options: { data: { username: cleanUsername } }
-        })
-        if (error) throw error
-        userId = data.user?.id
-      } catch (authErr) {
-        const msg = authErr.message?.toLowerCase() || ''
-        if (msg.includes('rate') || msg.includes('limit') || msg.includes('429') || msg.includes('exceeded')) {
-          console.warn('Supabase auth rate limit hit — using direct backend database profile registration.')
-          userId = crypto.randomUUID()
-        } else {
-          throw authErr
-        }
-      }
+      const userId = data.user?.id
+      if (!userId) throw new Error('Signup failed — no user id returned.')
 
-      if (!userId) userId = crypto.randomUUID()
-
-      // Store all user registration details in Supabase PostgreSQL backend
       await supabase.from('profiles').upsert({
         id: userId,
         email: cleanEmail,
@@ -166,7 +134,7 @@ export default function AuthPage() {
   async function finishRegistration(saveProfile = true) {
     setLoading(true)
     setError('')
-    const cleanEmail = regEmail.trim().toLowerCase()
+    const cleanEmail = regEmail.trim()
     try {
       if (saveProfile && regUserId) {
         let photoUrl = null
@@ -189,6 +157,7 @@ export default function AuthPage() {
         }).eq('id', regUserId)
       }
 
+      // Check if session is already active from signUp (e.g. if email confirmation is disabled in Supabase)
       const { data: { session: existingSession } } = await supabase.auth.getSession()
 
       if (existingSession) {
@@ -203,22 +172,17 @@ export default function AuthPage() {
       })
 
       if (signInError) {
-        // Directly authenticate user session so they are NEVER blocked by rate limits or email confirmation!
-        await setCustomSession({
-          user: { id: regUserId, email: cleanEmail }
-        })
-        toast.success("Welcome to LAST RESORT™! Entering destiny... 💕")
+        setError('')
+        toast('📧 Profile saved! Please check your email inbox to confirm your account, then log in.', { duration: 6000, icon: '✨' })
+        setStep(1)
+        setView('login')
+        setEmail(cleanEmail)
         return
       }
 
       toast.success("Welcome! Entering your Fate Questions... 💕")
     } catch (err) {
-      if (regUserId) {
-        await setCustomSession({ user: { id: regUserId, email: cleanEmail } })
-        toast.success("Welcome to LAST RESORT™! Entering destiny... 💕")
-      } else {
-        setError(err.message || 'Profile setup failed.')
-      }
+      setError(err.message || 'Profile setup failed.')
     } finally {
       setLoading(false)
     }
