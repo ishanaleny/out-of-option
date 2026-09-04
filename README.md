@@ -2,7 +2,7 @@
 
 
 
-# 💔 OUT OF OPTIONS — LAST RESORT™ 🎯
+#  OUT OF OPTIONS — LAST RESORT™ 
 
 > **The dating app you use when every other option has failed.**
 
@@ -27,9 +27,19 @@ Instead of helping users find compatible partners, the platform:
 The core idea is simple:
 > *You don't choose your match. The system chooses your suffering.*
 
+### The Problem (that doesn't exist)
+Modern dating applications grant users far too much choice and control, leading to decision paralysis, infinite swiping, ghosting after three dry texts, and over-optimized, unrealistic romantic expectations.
+
+### The Solution (that nobody asked for)
+LAST RESORT™ solves choice fatigue by removing human choice entirely:
+- **Legal Waiver Contracts**: Users legally surrender their right to be picky.
+- **Randomized Algorithm Overrules**: 80% of user swipes result in system rejection or assignment to a completely different human candidate.
+- **Sabotaged Chat Interaction**: Send buttons physically escape mouse cursors to prevent dry text openers ("Hey").
+- **Scream Verification**: Candidate identities remain 100% hidden until the user screams into the microphone.
+
 ---
 
-#### 🔁 User Flow
+#### User Flow
 ```text
 Landing Page
    ↓
@@ -50,7 +60,7 @@ Restart Loop
 
 ---
 
-#### 🏠 Landing Page
+####  Landing Page
 The entry point introduces the theme:
 * "You have officially hit rock bottom."
 * Disclaimer about damaged standards
@@ -60,7 +70,7 @@ This sets the tone for a chaotic, self-aware experience.
 
 ---
 
-#### 🎰 The Fate Question
+####  The Fate Question
 Users answer a **single meaningless question** with **6 options**.
 
 Each option secretly maps to a different dating mode:
@@ -75,37 +85,37 @@ The user is **not told which mode they selected**.
 
 ---
 
-#### 💀 Dating Modes
+####  Dating Modes
 
-##### 1. 🔄 The Opposite
+##### 1.  The Opposite
 Users define their ideal partner through 4–5 questions. The system inverts every preference and matches them with the exact opposite.
 > *"We know exactly who NOT to show you."*
 
-##### 2. 🐌 Slow Dating
+##### 2.  Slow Dating
 An intentionally frustrating experience featuring extremely slow loading, delayed actions, partial reveals (one pixel at a time), and fake queues/approvals.
 > *Every action feels unnecessarily difficult.*
 
-##### 3. 🧠 Uselessness Match
+##### 3.  Uselessness Match
 A gamified "uselessness test" including microphone interaction (scream to increase volume), mini-games (kill a mosquito with cursor), and absurd behavioral questions. Calculates a **Uselessness Score (%)** and matches with someone equally useless.
 > *"Together, you could waste 11.7 hours per day."*
 
-##### 4. 🃏 Anti-Swipe
+##### 4.  Anti-Swipe
 A Tinder-like interface with reversed logic (swipe right → rejected, swipe left → accepted, random algorithm overrides). Includes sarcastic system responses:
 * *"Nice try."*
 * *"You thought you had a choice?"*
 * *"The algorithm has rejected your decision."*
 
-##### 5. 🎡 Wheel of Terrible Decisions
+##### 5.  Wheel of Terrible Decisions
 A single random category decides compatibility (favorite fruit, sock preference, phone battery %, chai vs coffee).
 > *"We have no other evidence that you'll get along."*
 
-##### 6. 🎡 Wheel of Fate
+##### 6.  Wheel of Fate
 Multiple wheels generate a "perfect match" across age, interests, personality, hobby, pet, and location, providing a fake compatibility score.
 > *"We had to compromise on a few things. Mostly everything."*
 
 ---
 
-#### ❤️ Match System & Loop Mechanism
+####  Match System & Loop Mechanism
 All modes (except Anti-Swipe) lead to a **Match Result Page** displaying profile preview, compatibility percentage, and absurd reasoning.
 
 Users can:
@@ -115,15 +125,6 @@ Users can:
 
 ---
 
-### The Problem (that doesn't exist)
-Modern dating applications grant users far too much choice and control, leading to decision paralysis, infinite swiping, ghosting after three dry texts, and over-optimized, unrealistic romantic expectations.
-
-### The Solution (that nobody asked for)
-LAST RESORT™ solves choice fatigue by removing human choice entirely:
-- **Legal Waiver Contracts**: Users legally surrender their right to be picky.
-- **Randomized Algorithm Overrules**: 80% of user swipes result in system rejection or assignment to a completely different human candidate.
-- **Sabotaged Chat Interaction**: Send buttons physically escape mouse cursors to prevent dry text openers ("Hey").
-- **Scream Verification**: Candidate identities remain 100% hidden until the user screams into the microphone.
 
 ## Technical Details
 ### Technologies/Components Used
