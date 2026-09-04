@@ -2,17 +2,16 @@
 
 
 
-# LAST RESORT™ 🎯
+# LAST RESORT™ 
 
 
 ## Basic Details
-### Team Name: Out Of Option
+### Team Name: Nova
 
 
 ### Team Members
-- Team Lead: Ishan Aleny - Model Engineering College
-- Member 2: Team Member 2 - College
-- Member 3: Team Member 3 - College
+- Ishana Leny - Muthoot Institute of Technology and Science
+- Shreddha Eldho - Muthoot Institute of Technology and Science
 
 ### Project Description
 LAST RESORT™ is a chaotic anti-gravity dating web application designed for people exhausted by modern dating apps. It strips away romantic autonomy through randomized destiny modes, binding anti-swipe contracts, escaping send buttons, and anonymous scream reveals.
@@ -94,9 +93,9 @@ For Hardware:
 [Project Repository & Live Demo](https://github.com/user-attachments/assets)
 
 ## Team Contributions
-- Ishan Aleny: Core React Architecture, Anti-Swipe Tinder Deck, Supabase Integration, Escaping Send Button Sabotage Logic
-- Member 2: Vibe Match Harmonizer Quiz & Floating Glassmorphic Aesthetic Design System
-- Member 3: Anonymous Scream Reveal Protocol & PostgreSQL Movie Character Seed Dataset
+- Ishana Leny: Core React Architecture, Anti-Swipe Tinder Deck, Supabase Integration, Escaping Send Button Sabotage Logic
+- Shreddha Eldho: Vibe Match Harmonizer Quiz & Floating Glassmorphic Aesthetic Design System
+
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
