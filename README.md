@@ -6,6 +6,8 @@
 
 > **The dating app you use when every other option has failed.**
 
+🚀 **Live App**: [https://last-resort-rgbupo4dy-nova-036f.vercel.app/](https://last-resort-rgbupo4dy-nova-036f.vercel.app/)
+
 
 ## Basic Details
 ### Team Name: Nova
@@ -175,14 +177,17 @@ Open `http://localhost:5173` in your browser.
 For Software:
 
 # Screenshots (Add at least 3)
-![Landing Page](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788480368660.png)
-*LAST RESORT™ Landing Page featuring the Form LR-2026 mandatory anti-swipe contract waiver.*
+![Landing Page Entry](./screenshots/landing_page.png)
+*LAST RESORT™ Landing Page Interface with Register and Log In options.*
 
-![Anti-Swipe Tinder Deck](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788476047917.png)
-*Tinder-style Anti-Swipe Protocol card deck where user swipes are overrode by the algorithm.*
+![Fate Question Portals](./screenshots/fate_portals.png)
+*Fate Question Portals ("Choose Your Floating Number") mapping to hidden matchmaking algorithms.*
 
-![Complementary Vibe Match](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788476551002.png)
-*Complementary Vibe Match mode showcasing opposite energy candidate pairings.*
+![Mandatory Dating Contract](./screenshots/anti_swipe_contract.png)
+*Anti-Swipe Protocol Waiver (Form LR-2026: Mandatory Dating Contract) where users surrender control.*
+
+![Complementary Vibe Match Profile](./screenshots/vibe_match_profile.png)
+*Complementary Vibe Match profile deck displaying character bio cards with energy vibes and flags.*
 
 # Diagrams
 ![Workflow](file:///C:/Users/ASUS/.gemini/antigravity-ide/brain/9a658c66-301c-4dab-a0d8-52f203b850a5/.user_uploaded/media_1788493902846.png)
@@ -220,7 +225,7 @@ For Hardware:
 *Demonstrates mandatory contract signing, chaotic swipe overrides, escaping send button, and scream reveals.*
 
 # Additional Demos
-[Project Repository & Live Demo](https://github.com/user-attachments/assets)
+- **Live Vercel Web App**: [https://last-resort-rgbupo4dy-nova-036f.vercel.app/](https://last-resort-rgbupo4dy-nova-036f.vercel.app/)
 
 ## Team Contributions
 - **Ishana Leny**: Core React Architecture, Anti-Swipe Tinder Deck, Supabase Integration, Escaping Send Button Sabotage Logic, PostgreSQL Movie Character Dataset.
