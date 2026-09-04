@@ -6,7 +6,7 @@
 
 > **The dating app you use when every other option has failed.**
 
-🚀 **Live App**: [https://last-resort-rgbupo4dy-nova-036f.vercel.app/](https://last-resort-rgbupo4dy-nova-036f.vercel.app/)
+🚀 **Live App**: [https://last-resort-jqdcm52lc-nova-036f.vercel.app/](https://last-resort-jqdcm52lc-nova-036f.vercel.app/)
 
 
 ## Basic Details
@@ -198,7 +198,7 @@ This is a parody project. No actual matchmaking intelligence exists. Any emotion
 *Demonstrates mandatory contract signing, chaotic swipe overrides, escaping send button, and scream reveals.*
 
 # Additional Demos
-- **Live Vercel Web App**: [https://last-resort-rgbupo4dy-nova-036f.vercel.app/](https://last-resort-rgbupo4dy-nova-036f.vercel.app/)
+- **Live Vercel Web App**: [https://last-resort-jqdcm52lc-nova-036f.vercel.app/](https://last-resort-jqdcm52lc-nova-036f.vercel.app/)
 
 ## Team Contributions
 - **Ishana Leny**: Core React Architecture, Anti-Swipe Tinder Deck, Supabase Integration, Escaping Send Button Sabotage Logic, PostgreSQL Movie Character Dataset.
